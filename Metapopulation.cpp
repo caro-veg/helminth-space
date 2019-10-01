@@ -27,7 +27,7 @@ void Metapopulation::setupPopulations(vector<int> _popSizes, vector<double> _mea
             throw("population vector and number of population sizes given do not match");
         }
 
-        for(int i=0; i<populations.size(); ++i)
+        for(unsigned i=0; i<populations.size(); ++i)
             populations.at(i)->setupAgelessPopulation(_popSizes.at(i), _means.at(i), _variances.at(i), _generator);
     }
     catch(const char* msg)

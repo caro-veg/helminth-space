@@ -31,11 +31,8 @@ void Population::setupAgelessPopulation(int _popSize, double _mean, double _vari
     negative_binomial_distribution<int> nbDist(k, p);
     for(int i=0; i<_popSize; ++i)
     {
-        int wormBurden = nbDist(_generator);
-        people.at(i)->parasites.reserve(wormBurden);
-
-        for(int j=0; j<wormBurden; ++j)
-            people.at(i)->parasites.push_back(shared_ptr<Parasite> (new Parasite()));
+        people.at(i)->parasites = nbDist(_generator);
+        //determine number of female parasites
     }
 }
 

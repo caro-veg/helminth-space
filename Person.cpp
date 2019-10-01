@@ -1,13 +1,13 @@
 #include <iostream>
 #include <time.h>
 #include <cstdlib>
+#include <cmath>
 #include "Person.h"
 
 using namespace std;
 
 
-
-Person::Person(Graph &_graph) : graph(_graph), age(0)
+Person::Person(Graph &_graph) : graph(_graph), age(0), parasites(0), femaleParasites(0), predisposition(1), moving(false), alive(true)
 {
     srand(time(NULL));
     if(rand() % 100 < 50)
@@ -35,23 +35,68 @@ void Person::die()
 }
 
 
-void Person::setNodeNumber(int _nodeNumber)
+void Person::relocate(mt19937_64 _generator)
 {
-    try
+    vector<double> probabilities;
+    probabilities.reserve(graph.getNodeVector().size()-1);
+    //calculate probabilities to move to each node
+    cout << "hello" << endl;
+    for(unsigned i=0; i<graph.getNodeVector().size(); ++i)
     {
-        if(_nodeNumber < 0 || _nodeNumber > graph.getNodeVector().size())
+        if(i != nodeNumber)
         {
-            throw 1;
+            cout << "hello" << endl;
+            //calculate distances between current node and each other node in network
+            double temp = (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(0) - graph.getNodeVector().at(i)->getCoordinates().at(0)) * (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(0) - graph.getNodeVector().at(i)->getCoordinates().at(0))
+            + (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(1) - graph.getNodeVector().at(i)->getCoordinates().at(1)) * (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(1) - graph.getNodeVector().at(i)->getCoordinates().at(1));
+            cout << "hello" << endl;
+            double distance = sqrt(temp);
+            double probability = graph.getNodeVector().at(i)->getFitness() * exp(-distance/predisposition) / (predisposition * graph.getNodeVector().size()-1);
+            probabilities.push_back(probability);
         }
-        nodeNumber = _nodeNumber;
     }
-    catch(int e)
-    {
-        nodeNumber = 0;
-        cout << "Person's node number out of range, node number set to 0" << endl;
-    }
+    for(double x:probabilities) cout << x << " ";
+
+    //draw from multinomial distribution to determine which node person moves to
+    discrete_distribution<int> discDist(probabilities.begin(), probabilities.end());
+    for(double x:discDist.probabilities()) cout << x << " ";
+    cout << endl;
+
+    int newNodeNumber = 9; //discDist(_generator);
+
+    nodeNumber = newNodeNumber;
 }
 
+
+void Person::setNodeNumber(int _nodeNumber)
+{
+        nodeNumber = _nodeNumber;
+}
+
+void Person::setParasites(int _parasites)
+{
+    parasites = _parasites;
+}
+
+void Person::setFemaleParasites(int _femaleParasites)
+{
+    femaleParasites = _femaleParasites;
+}
+
+void Person::setPredisposition(double _predisposition)
+{
+    predisposition = _predisposition;
+}
+
+int Person::getNodeNumber()
+{
+    return nodeNumber;
+}
+
+vector<double> Person::getCoordinates()
+{
+    return graph.getNodeVector().at(nodeNumber)->getCoordinates();
+}
 
 
 double Person::getAge()
@@ -59,14 +104,33 @@ double Person::getAge()
     return age;
 }
 
-
 sex_enum Person::getSex()
 {
     return sex;
 }
 
 
-vector<shared_ptr<Parasite> > Person::getParasites()
+int Person::getParasites()
 {
     return parasites;
+}
+
+int Person::getFemaleParasites()
+{
+    return femaleParasites;
+}
+
+double Person::getPredisposition()
+{
+    return predisposition;
+}
+
+bool Person::getMoving()
+{
+    return moving;
+}
+
+bool Person::getAlive()
+{
+    return alive;
 }

@@ -1,33 +1,29 @@
 #ifndef NODE_H_INCLUDED
 #define NODE_H_INCLUDED
 
-#include <utility>
 #include <memory>
 #include <vector>
 
-using std::pair;
 using std::vector;
 using std::shared_ptr;
 
 class Node
 {
 private:
-    pair<double, double> coordinates;
-    int number;
-    //map of destination nodes with distance
-    vector<pair<shared_ptr<Node>, double> > destinationNodes;
+    vector<double> coordinates;   //spatial coordinates
+    double fitness; //node fitness
     bool occupied;
 
 public:
     Node();
     ~Node();
 
-    void setNumber(int _number);
-    void addDestinationNode(shared_ptr<Node> _node, double _distance);
+    void setCoordinates(vector<double> _coordinates);
+    void setFitness(double _fitness);
     void setOccupied(bool _occupied);
 
-    int getNumber();
-    vector<pair<shared_ptr<Node>, double> > getDestinationNodes();
+    vector<double> getCoordinates();
+    double getFitness();
     bool getOccupied();
 };
 

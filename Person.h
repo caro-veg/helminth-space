@@ -2,28 +2,31 @@
 #define PERSON_H_INCLUDED
 
 #include <vector>
-#include <utility>
 #include <memory>
+#include <random>
 #include "Utility_Functions.h"
 #include "Graph.h"
-#include "Parasite.h"
 
-using std::pair;
 using std::vector;
 using std::shared_ptr;
+using std::mt19937_64;
+
 
 class Person
 {
     friend class Population;
 private:
     Graph &graph;
-    pair<double, double> coordinates;   //for spatially explicit model
-    int nodeNumber;                     //for network model
+    int nodeNumber;
 
     double age;
     sex_enum sex;
-    vector<shared_ptr<Parasite> > parasites;
+    int parasites;
+    int femaleParasites;
 
+    double predisposition;
+    bool moving;
+    bool alive;
 
 public:
     Person(Graph &_graph);
@@ -31,14 +34,25 @@ public:
 
     void aging(double _ageInterval);
     void die();
+    void relocate(mt19937_64 _generator);
 
     void setNodeNumber(int _nodeNumber);
+    void setParasites(int _parasites);
+    void setFemaleParasites(int _femaleParasites);
+    void setPredisposition(double _predisposition);
 
-    pair<double, double> getCoordinates();
     int getNodeNumber();
+    vector<double> getCoordinates();
+
     double getAge();
     sex_enum getSex();
-    vector<shared_ptr<Parasite> > getParasites();
+
+    int getParasites();
+    int getFemaleParasites();
+    double getPredisposition();
+
+    bool getMoving();
+    bool getAlive();
 };
 
 #endif // PERSON_H_INCLUDED

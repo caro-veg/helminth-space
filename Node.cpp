@@ -11,18 +11,15 @@ Node::Node() : occupied(false)
 Node::~Node() {}
 
 
-void Node::setNumber(int _number)
+void Node::setCoordinates(vector<double> _coordinates)
 {
-    number = _number;
+    coordinates = _coordinates;
 }
 
-
-void Node::addDestinationNode(shared_ptr<Node> _node, double _distance)
+void Node::setFitness(double _fitness)
 {
-    pair<shared_ptr<Node>, double> connection(_node, _distance);
-    destinationNodes.push_back(connection);
+    fitness = _fitness;
 }
-
 
 void Node::setOccupied(bool _occupied)
 {
@@ -30,17 +27,15 @@ void Node::setOccupied(bool _occupied)
 }
 
 
-int Node::getNumber()
+vector<double> Node::getCoordinates()
 {
-    return number;
+    return coordinates;
 }
 
-
-vector<pair<shared_ptr<Node>, double> > Node::getDestinationNodes()
+double Node::getFitness()
 {
-    return destinationNodes;
+    return fitness;
 }
-
 
 bool Node::getOccupied()
 {
