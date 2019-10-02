@@ -18,41 +18,49 @@ class Person
 private:
     Graph &graph;
     int nodeNumber;
+    vector<double> coordinates;
+    double movementRate;
+    double predisposition;  //predisposition for distance to move
 
     double age;
     sex_enum sex;
     int parasites;
     int femaleParasites;
+     bool alive;
 
-    double predisposition;
-    bool moving;
-    bool alive;
 
 public:
     Person(Graph &_graph);
     ~Person();
 
-    void aging(double _ageInterval);
-    void die();
+    void setNodeNumber(int _nodeNumber);
+    void setCoordinates(vector<double> coordinates);
+    void setPredisposition(double _predisposition);
+    void setMovementRate(double _movementRate);
+
+
     void relocate(mt19937_64 _generator);
 
-    void setNodeNumber(int _nodeNumber);
+    void aging(double _ageInterval);
+    void die();
+
     void setParasites(int _parasites);
     void setFemaleParasites(int _femaleParasites);
-    void setPredisposition(double _predisposition);
+
 
     int getNodeNumber();
     vector<double> getCoordinates();
 
+    double getMovementRate();
+    double getPredisposition();
+
     double getAge();
     sex_enum getSex();
+    bool getAlive();
 
     int getParasites();
     int getFemaleParasites();
-    double getPredisposition();
 
-    bool getMoving();
-    bool getAlive();
 };
 
 #endif // PERSON_H_INCLUDED

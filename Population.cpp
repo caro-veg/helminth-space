@@ -16,6 +16,16 @@ Population::~Population()
 }
 
 
+void Population::setupPopulation(int _popSize)
+{
+    //create people vector
+    for(int i=0; i<_popSize; ++i)
+    {
+           people.push_back(shared_ptr<Person> (new Person(graph)));
+    }
+}
+
+
 void Population::setupAgelessPopulation(int _popSize, double _mean, double _variance, mt19937_64 _generator)
 {
     //create people vector
@@ -37,7 +47,7 @@ void Population::setupAgelessPopulation(int _popSize, double _mean, double _vari
 }
 
 
-void Population::setupPopulation()
+void Population::setupAgeStructuredPopulation()
 {
     //draw life spans of individuals
     //generate birth dates for individuals: -lifeSpans*runif(pars$N)
@@ -84,9 +94,22 @@ void Population::setLifeSpans()
     //for loop over people vectors: draw a lifespan from the population survival curve and assign to person
 }
 
-double Population::getReservoir()
+
+void Population::setMovementRates(vector<double> _movementRates)
 {
-    return reservoir;
+    for(unsigned i=0; i<people.size(); ++i)
+    {
+        people.at(i)->setMovementRate(_movementRates.at(i));
+    }
+}
+
+
+void Population::setInitialCoordinates(vector<vector<double> > _coordinates)
+{
+    for(unsigned i=0;i<people.size(); ++i)
+    {
+        people.at(i)->setCoordinates(_coordinates.at(i));
+    }
 }
 
 vector<shared_ptr<Person> > Population::getPeople()

@@ -7,8 +7,10 @@
 using namespace std;
 
 
-Person::Person(Graph &_graph) : graph(_graph), age(0), parasites(0), femaleParasites(0), predisposition(1), moving(false), alive(true)
+Person::Person(Graph &_graph) : graph(_graph), nodeNumber(0), coordinates(), movementRate(0), predisposition(1), age(0), parasites(0), femaleParasites(0), alive(true)
 {
+    coordinates.reserve(2);
+
     srand(time(NULL));
     if(rand() % 100 < 50)
         sex = female;
@@ -23,15 +25,24 @@ Person::~Person()
 }
 
 
-void Person::aging(double _ageInterval)
+void Person::setNodeNumber(int _nodeNumber)
 {
-    age +=_ageInterval;
+        nodeNumber = _nodeNumber;
 }
 
-
-void Person::die()
+void Person::setCoordinates(vector<double> _coordinates)
 {
+    coordinates = _coordinates;
+}
 
+void Person::setPredisposition(double _predisposition)
+{
+    predisposition = _predisposition;
+}
+
+void Person::setMovementRate(double _movementRate)
+{
+    movementRate = _movementRate;
 }
 
 
@@ -68,10 +79,17 @@ void Person::relocate(mt19937_64 _generator)
 }
 
 
-void Person::setNodeNumber(int _nodeNumber)
+void Person::aging(double _ageInterval)
 {
-        nodeNumber = _nodeNumber;
+    age +=_ageInterval;
 }
+
+
+void Person::die()
+{
+
+}
+
 
 void Person::setParasites(int _parasites)
 {
@@ -83,10 +101,6 @@ void Person::setFemaleParasites(int _femaleParasites)
     femaleParasites = _femaleParasites;
 }
 
-void Person::setPredisposition(double _predisposition)
-{
-    predisposition = _predisposition;
-}
 
 int Person::getNodeNumber()
 {
@@ -95,7 +109,7 @@ int Person::getNodeNumber()
 
 vector<double> Person::getCoordinates()
 {
-    return graph.getNodeVector().at(nodeNumber)->getCoordinates();
+    return coordinates;
 }
 
 
@@ -123,11 +137,6 @@ int Person::getFemaleParasites()
 double Person::getPredisposition()
 {
     return predisposition;
-}
-
-bool Person::getMoving()
-{
-    return moving;
 }
 
 bool Person::getAlive()

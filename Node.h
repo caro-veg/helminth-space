@@ -11,8 +11,7 @@ class Node
 {
 private:
     vector<double> coordinates;   //spatial coordinates
-    double fitness; //node fitness
-    bool occupied;
+    double fitness; //node fitness: "attraction" of location for people
 
 public:
     Node();
@@ -20,11 +19,9 @@ public:
 
     void setCoordinates(vector<double> _coordinates);
     void setFitness(double _fitness);
-    void setOccupied(bool _occupied);
 
     vector<double> getCoordinates();
     double getFitness();
-    bool getOccupied();
 };
 
 #endif // NODE_H_INCLUDED
