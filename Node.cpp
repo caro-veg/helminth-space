@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Node::Node()
+Node::Node() : fitness(1)
 {
 
 }

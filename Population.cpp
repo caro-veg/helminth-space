@@ -26,6 +26,18 @@ void Population::setupPopulation(int _popSize)
 }
 
 
+void Population::distributePopulation(mt19937_64 _generator)
+{
+    uniform_int_distribution<int> unifDist(0, graph.getNodeVector().size()-1);
+    for(unsigned i=0; i<people.size(); ++i)
+    {
+        int nodeNumber = unifDist(_generator);
+        people.at(i)->setNodeNumber(nodeNumber);
+        people.at(i)->setCoordinates(graph.getNodeVector().at(nodeNumber)->getCoordinates());
+    }
+}
+
+
 void Population::setupAgelessPopulation(int _popSize, double _mean, double _variance, mt19937_64 _generator)
 {
     //create people vector
@@ -45,6 +57,7 @@ void Population::setupAgelessPopulation(int _popSize, double _mean, double _vari
         //determine number of female parasites
     }
 }
+
 
 
 void Population::setupAgeStructuredPopulation()
@@ -94,7 +107,6 @@ void Population::setLifeSpans()
     //for loop over people vectors: draw a lifespan from the population survival curve and assign to person
 }
 
-
 void Population::setMovementRates(vector<double> _movementRates)
 {
     for(unsigned i=0; i<people.size(); ++i)
@@ -104,13 +116,37 @@ void Population::setMovementRates(vector<double> _movementRates)
 }
 
 
-void Population::setInitialCoordinates(vector<vector<double> > _coordinates)
+void Population::setPredispositions(vector<double> _predispositions)
 {
-    for(unsigned i=0;i<people.size(); ++i)
+    for(unsigned i=0; i<people.size(); ++i)
     {
-        people.at(i)->setCoordinates(_coordinates.at(i));
+        people.at(i)->setPredisposition(_predispositions.at(i));
     }
 }
+
+void Population::setPredispositions(double _shape, double _scale, mt19937_64 _generator)
+{
+    gamma_distribution<double> gammaDist(_shape, _scale);
+    for(unsigned i=0; i<people.size(); ++i)
+    {
+        double predisposition = gammaDist(_generator);
+        people.at(i)->setPredisposition(predisposition);
+    }
+}
+
+
+void Population::relocation(vector<double> _u, mt19937_64 _generator)
+{
+    for(unsigned i=0; i<people.size(); ++i)
+    {
+        poisson_distribution<int> poissonDist(people.at(i)->getMovementRate());
+        if(_u.at(i) < static_cast<double> (poissonDist(_generator)))
+        {
+            people.at(i)->relocate(_generator);
+        }
+    }
+}
+
 
 vector<shared_ptr<Person> > Population::getPeople()
 {

@@ -51,29 +51,30 @@ void Person::relocate(mt19937_64 _generator)
     vector<double> probabilities;
     probabilities.reserve(graph.getNodeVector().size()-1);
     //calculate probabilities to move to each node
-    cout << "hello" << endl;
+
     for(unsigned i=0; i<graph.getNodeVector().size(); ++i)
     {
         if(i != nodeNumber)
         {
-            cout << "hello" << endl;
+
             //calculate distances between current node and each other node in network
             double temp = (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(0) - graph.getNodeVector().at(i)->getCoordinates().at(0)) * (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(0) - graph.getNodeVector().at(i)->getCoordinates().at(0))
             + (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(1) - graph.getNodeVector().at(i)->getCoordinates().at(1)) * (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(1) - graph.getNodeVector().at(i)->getCoordinates().at(1));
-            cout << "hello" << endl;
+
             double distance = sqrt(temp);
             double probability = graph.getNodeVector().at(i)->getFitness() * exp(-distance/predisposition) / (predisposition * graph.getNodeVector().size()-1);
+            //double probability = graph.getNodeVector().at(i)->getFitness() * exp(-distance/predisposition) / predisposition;
             probabilities.push_back(probability);
         }
     }
-    for(double x:probabilities) cout << x << " ";
+    //for(double x:probabilities) cout << x << " ";
 
     //draw from multinomial distribution to determine which node person moves to
     discrete_distribution<int> discDist(probabilities.begin(), probabilities.end());
-    for(double x:discDist.probabilities()) cout << x << " ";
-    cout << endl;
+    //for(double x:discDist.probabilities()) cout << x << " ";
+    //cout << endl;
 
-    int newNodeNumber = 9; //discDist(_generator);
+    int newNodeNumber = discDist(_generator);
 
     nodeNumber = newNodeNumber;
 }
@@ -132,6 +133,11 @@ int Person::getParasites()
 int Person::getFemaleParasites()
 {
     return femaleParasites;
+}
+
+double Person::getMovementRate()
+{
+    return movementRate;
 }
 
 double Person::getPredisposition()
