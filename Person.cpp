@@ -62,12 +62,16 @@ void Person::relocate(mt19937_64 _generator)
             + (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(1) - graph.getNodeVector().at(i)->getCoordinates().at(1)) * (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(1) - graph.getNodeVector().at(i)->getCoordinates().at(1));
 
             double distance = sqrt(temp);
-            double probability = graph.getNodeVector().at(i)->getFitness() * exp(-distance/predisposition) / (predisposition * graph.getNodeVector().size()-1);
-            //double probability = graph.getNodeVector().at(i)->getFitness() * exp(-distance/predisposition) / predisposition;
+            double probability = graph.getNodeVector().at(i)->getFitness() * exp(-distance/predisposition) / predisposition;
             probabilities.push_back(probability);
         }
+        else
+            probabilities.push_back(0);
     }
     //for(double x:probabilities) cout << x << " ";
+    //cout << endl;
+
+    //probabilities.at(nodeNumber) = 0;
 
     //draw from multinomial distribution to determine which node person moves to
     discrete_distribution<int> discDist(probabilities.begin(), probabilities.end());
