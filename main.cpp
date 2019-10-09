@@ -3,6 +3,7 @@
 #include "Population.h"
 #include "Graph.h"
 #include "Output.h"
+#include "Recorder.h"
 
 using namespace std;
 
@@ -13,10 +14,13 @@ int main()
     unsigned seed = 1234;
     mt19937_64 generator(seed);
 
-    int timeSteps;
+    int timeSteps=10;
+
+    Recorder rec;
+    Output out;
 
     Graph g;
-    g.setNodeCoordinatesPoisson(4, 1000, 1000, generator);
+    g.setNodeCoordinatesPoisson(4, 10000, 10000, generator);
 
 
    /* Person p(g);
@@ -33,7 +37,7 @@ int main()
     } */
 
     Population pop(g);
-    pop.setupPopulation(10);
+    pop.setupPopulation(10000);
     pop.distributePopulation(generator);
 
     vector<double> movementRates(pop.getPeople().size(), 3);
@@ -68,23 +72,28 @@ int main()
     cout << endl;*/
 
 
-    for(int i=0; i<timeSteps; ++i){
-
-    for(unsigned i=0; i<pop.getPeople().size(); ++i)
+    for(int i=0; i<timeSteps; ++i)
     {
-        cout << pop.getPeople().at(i)->getNodeNumber() << " ";
+        rec.recordTrajectories(pop);
+        pop.relocation(u, generator);
     }
-    cout << endl;
 
-    pop.relocation(u, generator);
+    //cout << rec.getTrajectories().size() << endl << endl;
 
-    for(unsigned i=0; i<pop.getPeople().size(); ++i)
+   /* for(unsigned i=0; i<rec.getTrajectories().size(); ++i)
     {
-        cout << pop.getPeople().at(i)->getNodeNumber() << " ";
-    }
-    cout << endl;
+        for(unsigned j=0; j<rec.getTrajectories().at(i).size(); ++j)
+        {
+            for(unsigned k=0; k<rec.getTrajectories().at(i).at(j).size(); ++k)
+            {
+                cout << rec.getTrajectories().at(i).at(j).at(k) << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+    } */
 
-    }
+    out.printToCsvTrajectories(rec, "Trajectories");
 
     return 0;
 }

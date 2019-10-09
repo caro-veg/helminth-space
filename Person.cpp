@@ -56,7 +56,6 @@ void Person::relocate(mt19937_64 _generator)
     {
         if(i != nodeNumber)
         {
-
             //calculate distances between current node and each other node in network
             double temp = (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(0) - graph.getNodeVector().at(i)->getCoordinates().at(0)) * (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(0) - graph.getNodeVector().at(i)->getCoordinates().at(0))
             + (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(1) - graph.getNodeVector().at(i)->getCoordinates().at(1)) * (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(1) - graph.getNodeVector().at(i)->getCoordinates().at(1));
@@ -78,9 +77,12 @@ void Person::relocate(mt19937_64 _generator)
     //for(double x:discDist.probabilities()) cout << x << " ";
     //cout << endl;
 
+    //cout << nodeNumber << endl;
     int newNodeNumber = discDist(_generator);
-
     nodeNumber = newNodeNumber;
+    //cout << nodeNumber << endl;
+    vector<double> newCoordinates = graph.getNodeVector().at(newNodeNumber)->getCoordinates();
+    coordinates = newCoordinates;
 }
 
 

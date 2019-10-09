@@ -6,6 +6,7 @@
 #include <fstream>
 #include "Graph.h"
 #include "Population.h"
+#include "Recorder.h"
 
 using std::vector;
 using std::string;
@@ -14,13 +15,8 @@ class Output
 {
 private:
 
-    Graph &g;
-    Population &p;
-
-    vector<vector<double> > trajectories;
-
 public:
-    Output(Graph &_g, Population &_p, int _timeSteps);
+    Output();
     ~Output();
 
     template<typename T>
@@ -53,8 +49,9 @@ public:
 
     void printToCsvNodeCoordinates(Graph &_g, string _filename);
 
+    void printToCsvTrajectories(Recorder &_rec, string _filename);
 
-    vector<vector<double> > getTrajectories();
+
 };
 
 #endif // OUTPUT_H_INCLUDED

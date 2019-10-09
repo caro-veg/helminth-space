@@ -3,14 +3,9 @@
 
 using namespace std;
 
-Output::Output(Graph &_g, Population &_p, int _timeSteps) : g(_g), p(_p)
+Output::Output()
 {
-    vector<double> helpVector;
-    helpVector.reserve(p.getPeople().size());
-    for(int i=0; i<_timeSteps; ++i)
-    {
-        trajectories.push_back(helpVector);
-    }
+
 }
 
 Output::~Output() {}
@@ -27,7 +22,23 @@ void Output::printToCsvNodeCoordinates(Graph &_g, string _filename)
 }
 
 
-vector<vector<double> > Output::getTrajectories()
+void Output::printToCsvTrajectories(Recorder &_rec, string _filename)
 {
-    return trajectories;
+    ofstream file;
+    file.open((_filename + ".csv").c_str());
+    for(unsigned i=0; i<_rec.getTrajectories().size(); ++i)
+    {
+        for(unsigned j=0; j<_rec.getTrajectories().at(i).size(); ++j)
+        {
+            file << i << "," << j << ",";
+
+            for(unsigned k=0; k<_rec.getTrajectories().at(i).at(j).size(); ++k)
+            {
+                file << _rec.getTrajectories().at(i).at(j).at(k) << ",";
+            }
+
+            file << endl;
+        }
+    }
 }
+
