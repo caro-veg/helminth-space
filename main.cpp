@@ -20,7 +20,7 @@ int main()
     Output out;
 
     Graph g;
-    g.setNodeCoordinatesPoisson(4, 10000, 10000, generator);
+    g.setNodeCoordinatesPoisson(4, 1000, 1000, generator);
 
 
    /* Person p(g);
@@ -37,7 +37,7 @@ int main()
     } */
 
     Population pop(g);
-    pop.setupPopulation(10000);
+    pop.setupPopulation(1000);
     pop.distributePopulation(generator);
 
     vector<double> movementRates(pop.getPeople().size(), 3);
