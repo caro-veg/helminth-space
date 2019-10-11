@@ -39,9 +39,10 @@ void OverlayGrid::calculateSideLength(Graph &_g, int _numberOfCells)
     else
     {
         sideLength = yLength / static_cast<double>(_numberOfCells);
-        double xCells = ceil(yLength / sideLength);
+        double xCells = ceil(xLength / sideLength);
         maxX = minX + xCells * sideLength;
     }
+
 }
 
 
@@ -51,28 +52,79 @@ void OverlayGrid::makeGrid(Graph &_g)
     int xCells = static_cast<int>(round((maxX - minX)/sideLength));
     int yCells = static_cast<int>(round((maxY - minY)/sideLength));
 
-    vector<vector<shared_ptr<Node> > > temp;
+    vector<vector<shared_ptr<Node> > > temp1;
     for(int i=0; i<xCells; ++i)
     {
-        nodes.push_back(temp);
+        nodesByCells.push_back(temp1);
+    }
+    cout << xCells << " " << yCells << endl;
+    //count villages in each grid cell
+    for(int i=0; i<xCells; ++i)
+    {
+        for(int j=0; j<yCells; ++j)
+        {
+            vector<shared_ptr<Node> > temp2;
+
+            for(unsigned k=0; k<_g.getNodeVector().size(); ++k)
+            {
+                if((_g.getNodeVector().at(k)->getCoordinates().at(0) >= (minX + i*sideLength)) &&
+                   (_g.getNodeVector().at(k)->getCoordinates().at(0) <= (minX + (i+1)*sideLength)) &&
+                   (_g.getNodeVector().at(k)->getCoordinates().at(1) >= (minY + j*sideLength)) &&
+                   (_g.getNodeVector().at(k)->getCoordinates().at(1) <= (minY + (j+1)*sideLength)))
+                {
+                    temp2.push_back(_g.getNodeVector().at(k));
+                }
+            }
+            nodesByCells.at(j).push_back(temp2);
+        }
     }
 
-    //count villages in each grid cell
-    for(unsigned i=0; i<_g.getNodeVector().size(); ++i)
+    //initialise distance matrix
+    double totalCells = xCells * yCells;
+    vector<double> help(totalCells, 0);
+    for(int i=0; i<totalCells; ++i)
     {
-        for(int j=0; j<xCells; ++j)
+        distances.push_back(help);
+    }
+
+    for(unsigned i=0; i<nodesByCells.size(); ++i)
+    {
+        for(unsigned j=0; j<nodesByCells.at(i).size(); ++j)
         {
-            for(int k=0; k<yCells; ++k)
+            for(unsigned k=0; k<nodesByCells.size(); ++k)
             {
-                if((_g.getNodeVector().at(i)->getCoordinates().at(0) > j*sideLength) &&
-                   (_g.getNodeVector().at(i)->getCoordinates().at(0) < (j+1)*sideLength) &&
-                   (_g.getNodeVector().at(i)->getCoordinates().at(1) > k*sideLength) &&
-                   (_g.getNodeVector().at(i)->getCoordinates().at(1) < (k+1)*sideLength))
+                for(unsigned l=0; l<nodesByCells.at(k).size(); ++l)
                 {
-                    nodes.at(j).at(k).push_back(_g.getNodeVector().at(i));
+                    double distance = sideLength * (abs(static_cast<double>(k)-static_cast<double>(i)) + abs(static_cast<double>(l)-static_cast<double>(j)));
+                    cout << k << " " << i << " " << l << " " << j << " " << distance << endl;
+                    cout << i + j*yCells << " " << k + l*yCells << endl;
+                    distances.at(i + j*yCells).at(k + l*yCells) = distance;
                 }
             }
         }
+
+    }
+}
+
+
+
+void OverlayGrid::calculateDistances()
+{
+    for(unsigned i=0; i<nodesByCells.size(); ++i)
+    {
+        for(unsigned j=0; j<nodesByCells.at(i).size(); ++j)
+        {
+            for(unsigned k=0; k<nodesByCells.size(); ++k)
+            {
+                for(unsigned l=0; l<nodesByCells.at(k).size(); ++l)
+                {
+                    double distance = sideLength * (abs(static_cast<double>(k)-static_cast<double>(i)) + abs(static_cast<double>(l)-static_cast<double>(j)));
+                    cout << k << " " << i << " " << l << " " << j << " " << distance << endl;
+                    distances.at(i + j*nodesByCells.size()).at(k + l*nodesByCells.at(i).size()) = distance;
+                }
+            }
+        }
+
     }
 }
 
@@ -81,4 +133,15 @@ void OverlayGrid::makeGrid(Graph &_g)
 double OverlayGrid::getSideLength()
 {
     return sideLength;
+}
+
+const vector<vector<double> > &OverlayGrid::getDistances()
+{
+    return distances;
+}
+
+
+vector<vector<vector<shared_ptr<Node> > > > OverlayGrid::getNodesByCells()
+{
+    return nodesByCells;
 }
