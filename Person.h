@@ -6,6 +6,7 @@
 #include <random>
 #include "Utility_Functions.h"
 #include "Graph.h"
+#include "OverlayGrid.h"
 
 using std::vector;
 using std::shared_ptr;
@@ -26,7 +27,7 @@ private:
     sex_enum sex;
     int parasites;
     int femaleParasites;
-     bool alive;
+    bool alive;
 
 
 public:
@@ -40,6 +41,7 @@ public:
 
 
     void relocate(mt19937_64 _generator);
+    void relocateRejection(mt19937_64 _generator, Graph &_g, OverlayGrid &_og);
 
     void aging(double _ageInterval);
     void die();

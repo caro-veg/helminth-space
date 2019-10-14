@@ -86,6 +86,21 @@ void Person::relocate(mt19937_64 _generator)
 }
 
 
+void Person::relocateRejection(mt19937_64 _generator, Graph &_g, OverlayGrid &_og)
+{
+    //determine position relative to overlay grid
+    vector<int> gridCoords = _g.getNodeVector().at(nodeNumber)->getCellCoordinates();
+    int xCells = _og.getXCells();
+    int yCells = _og.getYCells();
+    int position = (gridCoords.at(0) - 1) * xCells + yCells;
+
+    //draw from multinomial distribution to determine which cell in grid person moves to
+    //use distances from cell i (one row)
+
+
+}
+
+
 void Person::aging(double _ageInterval)
 {
     age +=_ageInterval;

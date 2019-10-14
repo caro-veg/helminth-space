@@ -25,18 +25,24 @@ int main()
 
     OverlayGrid og;
     og.calculateSideLength(g, 5);
+    //cout << og.getSideLength() << endl << endl;
 
-    og.makeGrid(g);
-    cout << og.getDistances().size() << " " << og.getDistances().at(0).size() << endl;
+    og.makeGrid(g, 2.0, 1.6);
+    cout << og.getNodesByCells().size() << " " << og.getNodesByCells().at(0).size() << endl << endl;
 
-    for(unsigned i=0; i<og.getDistances().size(); ++i)
+    cout << og.getHazards().size() << " " << og.getHazards().at(0).size() << endl;
+
+    //cout << og.getDistances().at(5).at(0) << endl;
+
+
+    /*for(unsigned i=0; i<og.getHazards().size(); ++i)
     {
-        for(unsigned j=0; j<og.getDistances().at(i).size(); ++j)
+        for(unsigned j=0; j<og.getHazards().at(i).size(); ++j)
         {
-            cout << og.getDistances().at(i).at(j) << " ";
+            cout << og.getHazards().at(i).at(j) << " ";
         }
         cout << endl;
-    }
+    }*/
 
     return 0;
 }

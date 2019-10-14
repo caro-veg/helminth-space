@@ -21,6 +21,11 @@ void Node::setFitness(double _fitness)
     fitness = _fitness;
 }
 
+void Node::setCellCoordinates(vector<int> _cellCoordinates)
+{
+    cellCoordinates = _cellCoordinates;
+}
+
 vector<double> Node::getCoordinates()
 {
     return coordinates;
@@ -29,5 +34,10 @@ vector<double> Node::getCoordinates()
 double Node::getFitness()
 {
     return fitness;
+}
+
+vector<int> Node::getCellCoordinates()
+{
+    return cellCoordinates;
 }
 
