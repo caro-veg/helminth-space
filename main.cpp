@@ -22,17 +22,23 @@ int main()
 
     Graph g;
     g.setNodeCoordinatesPoisson(4, 10, 10, generator);
+    g.setNodeNumbers();
 
     OverlayGrid og;
     og.calculateSideLength(g, 5);
     //cout << og.getSideLength() << endl << endl;
 
     og.makeGrid(g, 2.0, 1.6);
-    cout << og.getNodesByCells().size() << " " << og.getNodesByCells().at(0).size() << endl << endl;
 
-    cout << og.getHazards().size() << " " << og.getHazards().at(0).size() << endl;
+    //cout << og.getNodesByCells().size() << " " << og.getNodesByCells().at(2).size() << endl << endl;
 
-    //cout << og.getDistances().at(5).at(0) << endl;
+    Person p(g);
+    p.setNodeNumber(10);
+    p.relocateRejection(generator, g, og, 3, 1.6);
+
+    //cout << og.getHazards().size() << " " << og.getHazards().at(0).size() << endl;
+
+    //cout << og.getHazards().at(2).at(13) << endl;
 
 
     /*for(unsigned i=0; i<og.getHazards().size(); ++i)

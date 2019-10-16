@@ -15,7 +15,10 @@ void Graph::createNodes(int _N)
 {
     nodeVector.reserve(_N);
     for(int i=0; i<_N; ++i)
+    {
         nodeVector.push_back(shared_ptr<Node> (new Node()));
+    }
+
 }
 
 
@@ -76,6 +79,12 @@ void Graph::setNodeCoordinatesPoisson(double _mean, double _maxRadius, double _n
     }
 }
 
+
+void Graph::setNodeNumbers()
+{
+    for(int i=0; i<nodeVector.size(); ++i)
+        nodeVector.at(i)->setNodeNumber(i);
+}
 
 void Graph::setNodeFitness(vector<double> _fitnesses)
 {
