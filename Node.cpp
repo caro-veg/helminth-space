@@ -31,6 +31,16 @@ void Node::setCellCoordinates(vector<int> _cellCoordinates)
     cellCoordinates = _cellCoordinates;
 }
 
+void Node::setLeft(shared_ptr<Node> _node)
+{
+    left = _node;
+}
+
+void Node::setRight(shared_ptr<Node> _node)
+{
+    right = _node;
+}
+
 vector<double> Node::getCoordinates()
 {
     return coordinates;
@@ -51,3 +61,12 @@ vector<int> Node::getCellCoordinates()
     return cellCoordinates;
 }
 
+shared_ptr<Node> Node::getLeft()
+{
+    return left;
+}
+
+shared_ptr<Node> Node::getRight()
+{
+    return right;
+}
