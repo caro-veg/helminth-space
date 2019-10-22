@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Node::Node() : fitness(1)
+Node::Node() : fitness(1), left(nullptr), right(nullptr)
 {
 
 }

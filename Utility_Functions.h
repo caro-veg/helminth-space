@@ -13,7 +13,7 @@ using std::shared_ptr;
 enum sex_enum {male, female};
 
 
-shared_ptr<Node> findMedian(vector<shared_ptr<Node> > _a, int _dim);
+shared_ptr<Node> findMedian(vector<shared_ptr<Node> > &_a, int _dim);
 
 
 
