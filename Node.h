@@ -18,7 +18,7 @@ private:
     vector<int> cellCoordinates;
 
     //needed for kd-tree
-    shared_ptr<Node> left, right;
+    shared_ptr<Node> left, right, parent;
 
 
 public:
@@ -31,6 +31,7 @@ public:
     void setCellCoordinates(vector<int> _cellCoordinates);
     void setLeft(shared_ptr<Node> _node);
     void setRight(shared_ptr<Node> _node);
+    void setParent(shared_ptr<Node> _node);
 
     vector<double> getCoordinates();
     int getNodeNumber();
@@ -38,6 +39,7 @@ public:
     vector<int> getCellCoordinates();
     shared_ptr<Node> getLeft();
     shared_ptr<Node> getRight();
+    shared_ptr<Node> getParent();
 
 };
 

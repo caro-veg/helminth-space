@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Node::Node() : fitness(1), left(nullptr), right(nullptr)
+Node::Node() : fitness(1), left(nullptr), right(nullptr), parent(nullptr)
 {
 
 }
@@ -33,12 +33,19 @@ void Node::setCellCoordinates(vector<int> _cellCoordinates)
 
 void Node::setLeft(shared_ptr<Node> _node)
 {
+    //cout << _node->getCoordinates().at(0) << " " << _node->getCoordinates().at(1) << endl;
     left = _node;
+    //cout << "dddd" << endl;
 }
 
 void Node::setRight(shared_ptr<Node> _node)
 {
     right = _node;
+}
+
+void Node::setParent(shared_ptr<Node> _node)
+{
+    parent = _node;
 }
 
 vector<double> Node::getCoordinates()
@@ -69,4 +76,9 @@ shared_ptr<Node> Node::getLeft()
 shared_ptr<Node> Node::getRight()
 {
     return right;
+}
+
+shared_ptr<Node> Node::getParent()
+{
+    return parent;
 }

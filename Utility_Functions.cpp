@@ -1,5 +1,6 @@
 #include <iostream>
 #include <functional>
+#include <cmath>
 #include "Utility_Functions.h"
 
 using namespace std;
@@ -17,16 +18,16 @@ shared_ptr<Node> findMedian(vector<shared_ptr<Node> > &_a, int _dim)
 
     if(_dim == 0)
     {
-        //nth_element(_a.begin(), _a.begin() + _a.size()/2, _a.end(), [](shared_ptr<Node> _b, shared_ptr<Node> _c)
-        sort(_a.begin(), _a.end(), [](shared_ptr<Node> _b, shared_ptr<Node> _c)
+        nth_element(_a.begin(), _a.begin() + _a.size()/2, _a.end(), [](shared_ptr<Node> _b, shared_ptr<Node> _c)
+        //sort(_a.begin(), _a.end(), [](shared_ptr<Node> _b, shared_ptr<Node> _c)
             {
                 return(_b->getCoordinates().at(0) < _c->getCoordinates().at(0));
             });
     }
     else if(_dim == 1)
     {
-        //nth_element(_a.begin(),_a.begin() + _a.size()/2, _a.end(), [](shared_ptr<Node> _b, shared_ptr<Node> _c)
-        sort(_a.begin(), _a.end(), [](shared_ptr<Node> _b, shared_ptr<Node> _c)
+        nth_element(_a.begin(),_a.begin() + _a.size()/2, _a.end(), [](shared_ptr<Node> _b, shared_ptr<Node> _c)
+        //sort(_a.begin(), _a.end(), [](shared_ptr<Node> _b, shared_ptr<Node> _c)
             {
                 return(_b->getCoordinates().at(1) < _c->getCoordinates().at(1));
             });
@@ -42,3 +43,17 @@ shared_ptr<Node> findMedian(vector<shared_ptr<Node> > &_a, int _dim)
     return(_a.at(_a.size()/2));
 };
 
+
+//function to calculate Euclidean distance between two points
+double calculateDistance(shared_ptr<Node> _a, shared_ptr<Node> _b)
+{
+    if(_a==nullptr || _b==nullptr)
+        return 1e12;
+
+    double distance = (_a->getCoordinates().at(0) - _b->getCoordinates().at(0)) * (_a->getCoordinates().at(0) - _b->getCoordinates().at(0))
+                        + (_a->getCoordinates().at(1) - _b->getCoordinates().at(1)) * (_a->getCoordinates().at(1) - _b->getCoordinates().at(1)) ;
+
+    distance = sqrt(distance);
+
+    return distance;
+}

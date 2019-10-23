@@ -23,6 +23,7 @@ int main()
 
     Graph g;
     g.setNodeCoordinatesPoisson(4, 10, 10, generator);
+    g.setNodeNumbers();
     //g.setNodeNumbers();
     cout << g.getNodeVector().size() << endl;
     /*cout << endl << "Node coordinates" << endl;
@@ -34,15 +35,21 @@ int main()
     KDTree kdt;
 
     kdt.setRoot(kdt.makeTree(g));
+    kdt.linkParents(kdt.getRoot());
 
     cout << kdt.getNodeNumber() << endl;
 
-    kdt.printTree(kdt.getRoot(), 0);
-    /*cout << endl;
-    cout << kdt.getRoot()->getCoordinates().at(0) << " " << kdt.getRoot()->getCoordinates().at(1) << endl;
-    cout << kdt.getRoot()->getRight()->getCoordinates().at(0) << " " << kdt.getRoot()->getRight()->getCoordinates().at(1) << endl;
-    cout << kdt.getRoot()->getRight()->getRight()->getCoordinates().at(0) << " " << kdt.getRoot()->getRight()->getRight()->getCoordinates().at(1) << endl;
-    cout << kdt.getRoot()->getRight()->getRight()->getRight()->getCoordinates().at(0) << " " << kdt.getRoot()->getRight()->getRight()->getRight()->getCoordinates().at(1) << endl;*/
+    //kdt.printTree();
+
+    cout << kdt.getRoot()->getNodeNumber() << endl;
+
+    vector<shared_ptr<Node> > v;
+    kdt.findNodesWithinRadius(g.getNodeVector().at(15), 7.0, v);
+
+    for(int i=0; i<v.size(); ++i)
+    {
+        cout << v.at(i)->getCoordinates().at(0) << " " << v.at(i)->getCoordinates().at(1) << endl;
+    }
 
     return 0;
 }
