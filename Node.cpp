@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Node::Node() : fitness(1), left(nullptr), right(nullptr), parent(nullptr)
+Node::Node() : fitness(1), left(nullptr), right(nullptr), parent(nullptr), dimension(0), direction(0)
 {
 
 }
@@ -48,6 +48,16 @@ void Node::setParent(shared_ptr<Node> _node)
     parent = _node;
 }
 
+void Node::setDimension(int _dimension)
+{
+    dimension = _dimension;
+}
+
+void Node::setDirection(int _direction)
+{
+    direction = _direction;
+}
+
 vector<double> Node::getCoordinates()
 {
     return coordinates;
@@ -81,4 +91,14 @@ shared_ptr<Node> Node::getRight()
 shared_ptr<Node> Node::getParent()
 {
     return parent;
+}
+
+int Node::getDimension()
+{
+    return dimension;
+}
+
+int Node::getDirection()
+{
+    return direction;
 }

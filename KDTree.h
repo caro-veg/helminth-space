@@ -13,7 +13,7 @@ class KDTree
 private:
     shared_ptr<Node> root;
 
-    shared_ptr<Node> makeTree(vector<shared_ptr<Node> > &_nodes, int _dim, int _k);
+    shared_ptr<Node> makeTree(vector<shared_ptr<Node> > &_nodes, int _dim, int _k, int _direction);
     void findNodesWithinRadius(shared_ptr<Node> _focus, shared_ptr<Node> _comp, double _radius, vector<shared_ptr<Node> > &_nodes);
     int nodeNumber;
 

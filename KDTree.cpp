@@ -19,10 +19,10 @@ void KDTree::setRoot(shared_ptr<Node> _root)
 
 shared_ptr<Node> KDTree::makeTree(Graph &_g)
 {
-    return makeTree(_g.getNodeVector(), 0, 2);
+    return makeTree(_g.getNodeVector(), 0, 2, 0);
 }
 
-shared_ptr<Node> KDTree::makeTree(vector<shared_ptr<Node> > &_nodes, int _dim, int _k)
+shared_ptr<Node> KDTree::makeTree(vector<shared_ptr<Node> > &_nodes, int _dim, int _k, int _direction)
 {
 
     if(_nodes.size()==0)
@@ -33,11 +33,11 @@ shared_ptr<Node> KDTree::makeTree(vector<shared_ptr<Node> > &_nodes, int _dim, i
     //initial dimension passed should be 0
     int dim = _dim;
 
-    shared_ptr<Node> node;
-
     //recursively find median in each new partition of node vector
     //alternate between dimensions 0 and 1
-    node = findMedian(_nodes, dim);
+    shared_ptr<Node> node = findMedian(_nodes, dim);
+    node->setDimension(dim);
+    node->setDirection(_direction);
     dim = (dim + 1) % _k;
     vector<shared_ptr<Node> >::const_iterator first = _nodes.begin();
     vector<shared_ptr<Node> >::const_iterator median = _nodes.begin() + _nodes.size()/2;
@@ -58,8 +58,8 @@ shared_ptr<Node> KDTree::makeTree(vector<shared_ptr<Node> > &_nodes, int _dim, i
             cout << "right " << i << " " << rightNodes.at(i)->getCoordinates().at(0) << " " << rightNodes.at(i)->getCoordinates().at(1) << endl;
         }*/
 
-        node->setLeft(makeTree(leftNodes, dim, _k));
-        node->setRight(makeTree(rightNodes, dim, _k));
+        node->setLeft(makeTree(leftNodes, dim, _k, 1));
+        node->setRight(makeTree(rightNodes, dim, _k, 2));
 
         //left->setParent(node);
         //cout << "hello" << endl;
@@ -92,14 +92,27 @@ void KDTree::findNodesWithinRadius(shared_ptr<Node> _focus, double _radius, vect
     if(_focus==nullptr)
         return;
 
-    shared_ptr<Node> node = _focus;
-    while(node->getParent() != nullptr)
+    shared_ptr<Node> node = _focus->getParent();
+    while(node != nullptr)
     {
         double distance;
-        distance = calculateDistance(node, node->getParent());
+        distance = calculateDistance(_focus, node);
         if(distance <= _radius)
-            _nodes.push_back(node->getParent());
+            _nodes.push_back(node);
         shared_ptr<Node> parent = node->getParent();
+        if(abs(_focus->getCoordinates().at(node->getDimension()) - node->getCoordinates().at(node->getDimension())) <= _radius)
+        {
+            if(node->getDirection() == 1)
+            {
+                findNodesWithinRadius(_focus, node->getLeft(), _radius, _nodes);
+            }
+
+            else if(node->getDirection() == 2)
+            {
+                findNodesWithinRadius(_focus, node->getRight(), _radius, _nodes);
+            }
+
+        }
         node = parent;
     }
 

@@ -46,9 +46,15 @@ int main()
     vector<shared_ptr<Node> > v;
     kdt.findNodesWithinRadius(g.getNodeVector().at(15), 7.0, v);
 
-    for(int i=0; i<v.size(); ++i)
+    for(unsigned i=0; i<v.size(); ++i)
     {
         cout << v.at(i)->getCoordinates().at(0) << " " << v.at(i)->getCoordinates().at(1) << endl;
+    }
+    cout << v.size() << endl;
+
+    for(unsigned i=0; i<v.size(); ++i)
+    {
+        cout << calculateDistance(g.getNodeVector().at(15), v.at(i)) << endl;
     }
 
     return 0;
