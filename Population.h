@@ -44,6 +44,7 @@ public:
     void setPredispositions(double _shape, double _scale, mt19937_64 _generator);
 
     void relocation(vector<double> _u, mt19937_64 _generator);
+    void relocation(mt19937_64 _generator, Graph &_g, OverlayGrid &_og, double _alpha, double _gamma);
 
     vector<shared_ptr<Person> > getPeople();
 };

@@ -33,9 +33,7 @@ void Node::setCellCoordinates(vector<int> _cellCoordinates)
 
 void Node::setLeft(shared_ptr<Node> _node)
 {
-    //cout << _node->getCoordinates().at(0) << " " << _node->getCoordinates().at(1) << endl;
     left = _node;
-    //cout << "dddd" << endl;
 }
 
 void Node::setRight(shared_ptr<Node> _node)

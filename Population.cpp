@@ -148,6 +148,15 @@ void Population::relocation(vector<double> _u, mt19937_64 _generator)
 }
 
 
+void Population::relocation(mt19937_64 _generator, Graph &_g, OverlayGrid &_og, double _alpha, double _gamma)
+{
+    for(unsigned i=0; i<people.size(); ++i)
+    {
+        people.at(i)->relocate(_generator, _g, _og, _alpha, _gamma);
+    }
+}
+
+
 vector<shared_ptr<Person> > Population::getPeople()
 {
     return people;

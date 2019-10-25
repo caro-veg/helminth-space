@@ -7,6 +7,7 @@
 #include "Utility_Functions.h"
 #include "Graph.h"
 #include "OverlayGrid.h"
+#include "KDTree.h"
 
 using std::vector;
 using std::shared_ptr;
@@ -39,9 +40,10 @@ public:
     void setPredisposition(double _predisposition);
     void setMovementRate(double _movementRate);
 
-
     void relocate(mt19937_64 _generator);
-    void relocateRejection(mt19937_64 _generator, Graph &_g, OverlayGrid &_og, double _alpha, double _gamma);
+    void relocate(mt19937_64 _generator, vector<shared_ptr<Node> > _targetNodes);
+    void relocate(mt19937_64 _generator, Graph &_g, OverlayGrid &_og, double _alpha, double _gamma);
+    void relocate(mt19937_64 _generator, Graph &_g, KDTree &_kd, double _cutOffRadius);
 
     void aging(double _ageInterval);
     void die();

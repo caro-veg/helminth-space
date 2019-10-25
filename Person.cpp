@@ -84,7 +84,56 @@ void Person::relocate(mt19937_64 _generator)    //generalize so that this can be
 }
 
 
-void Person::relocateRejection(mt19937_64 _generator, Graph &_g, OverlayGrid &_og, double _alpha, double _gamma)
+void Person::relocate(mt19937_64 _generator, vector<shared_ptr<Node> > _targetNodes)
+{
+    vector<double> probabilities;
+    probabilities.reserve(_targetNodes.size()-1);
+    //calculate probabilities to move to each node
+
+    for(unsigned i=0; i<_targetNodes.size(); ++i)
+    {
+        if(i != nodeNumber)
+        {
+            //calculate distances between current node and each other node in network
+            double temp = (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(0) - _targetNodes.at(i)->getCoordinates().at(0)) * (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(0) - _targetNodes.at(i)->getCoordinates().at(0))
+            + (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(1) - _targetNodes.at(i)->getCoordinates().at(1)) * (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(1) - _targetNodes.at(i)->getCoordinates().at(1));
+            double distance = sqrt(temp);
+            double probability = _targetNodes.at(i)->getFitness() * exp(-distance/predisposition) / predisposition;
+            probabilities.push_back(probability);
+        }
+        else
+            probabilities.push_back(0);
+
+    }
+    //for(double x:probabilities) cout << x << " ";
+    //cout << endl;
+
+    //draw from multinomial distribution to determine which node person moves to
+    discrete_distribution<int> discDist(probabilities.begin(), probabilities.end());
+    //for(double x:discDist.probabilities()) cout << x << " ";
+    //cout << endl;
+
+    //cout << nodeNumber << endl;
+    int newNodeNumber = discDist(_generator);
+    setNodeNumber(newNodeNumber);
+}
+
+
+void Person::relocate(mt19937_64 _generator, Graph &_g, KDTree &_kd, double _cutOffRadius)
+{
+    //determine position in tree
+    shared_ptr<Node> focus = _g.getNodeVector().at(nodeNumber);
+    vector<shared_ptr<Node> > targetNodes;
+
+    //search points within cut-off radius (KD tree function)
+    _kd.findNodesWithinRadius(focus, _cutOffRadius, targetNodes);
+
+    //pass points to relocate function --> choose which of these points to move to
+    relocate(_generator, targetNodes);
+}
+
+
+void Person::relocate(mt19937_64 _generator, Graph &_g, OverlayGrid &_og, double _alpha, double _gamma)
 {
     //determine position relative to overlay grid
     vector<int> gridCoords = _g.getNodeVector().at(nodeNumber)->getCellCoordinates();
@@ -96,11 +145,14 @@ void Person::relocateRejection(mt19937_64 _generator, Graph &_g, OverlayGrid &_o
     //use distances from cell position (one row)
     discrete_distribution<int> discDist1(_og.getHazards().at(position).begin(), _og.getHazards().at(position).end());
     int newCellNumber = discDist1(_generator);
+    for(double x:_og.getHazards().at(position)) cout << x << " ";
+    cout << endl;
     int newCellX = newCellNumber / yCells;
     int newCellY = newCellNumber % yCells;
 
-    newCellX = 2; newCellY = 0;
-    //calculate distance from current node to all nodes in new cell
+    //cout << "target cell: " << newCellX << " " << newCellY << endl;
+
+    //relocate to one of the nodes in the chosen cell
     vector<shared_ptr<Node> > targetNodes = _og.getNodesByCells().at(newCellX).at(newCellY);
 
     if(targetNodes.size() > 0)
@@ -110,7 +162,7 @@ void Person::relocateRejection(mt19937_64 _generator, Graph &_g, OverlayGrid &_o
 
         for(unsigned i=0; i<targetNodes.size(); ++i)
         {
-            if(i != nodeNumber)
+            if(targetNodes.at(i)->getNodeNumber() != nodeNumber)
             {
                 double temp = (targetNodes.at(i)->getCoordinates().at(0) - _g.getNodeVector().at(nodeNumber)->getCoordinates().at(0)) * (targetNodes.at(i)->getCoordinates().at(0) - _g.getNodeVector().at(nodeNumber)->getCoordinates().at(0))
                             + (targetNodes.at(i)->getCoordinates().at(1) - _g.getNodeVector().at(nodeNumber)->getCoordinates().at(1)) * (targetNodes.at(i)->getCoordinates().at(1) - _g.getNodeVector().at(nodeNumber)->getCoordinates().at(1));
@@ -123,6 +175,8 @@ void Person::relocateRejection(mt19937_64 _generator, Graph &_g, OverlayGrid &_o
             else
                 probabilities.push_back(0);
         }
+        //for(double x:probabilities) cout << x << " ";
+        //cout << endl;
 
         discrete_distribution<int> discDist2(probabilities.begin(), probabilities.end());
         int n = discDist2(_generator);

@@ -29,6 +29,7 @@ void OverlayGrid::calculateSideLength(Graph &_g, int _numberOfCells)
     double xLength = maxX - minX;
     double yLength = maxY - minY;
 
+
     if(xLength < yLength)
     {
         xCells = _numberOfCells;
@@ -44,6 +45,7 @@ void OverlayGrid::calculateSideLength(Graph &_g, int _numberOfCells)
         xCells = ceil(xLength / sideLength);
         maxX = minX + xCells * sideLength;
     }
+
 }
 
 
@@ -55,7 +57,7 @@ void OverlayGrid::makeGrid(Graph &_g, double _alpha, double _gamma) // for hazar
     {
         nodesByCells.push_back(temp1);
     }*/
-    //cout << xCells << " " << yCells << endl;
+
     //count villages in each grid cell
     for(int i=0; i<xCells; ++i)
     {
@@ -105,7 +107,6 @@ void OverlayGrid::makeGrid(Graph &_g, double _alpha, double _gamma) // for hazar
         }
     }
 
-
     for(unsigned i=0; i<coordinates.size(); ++i)
     {
         for(unsigned j=0; j<coordinates.size(); ++j)
@@ -116,7 +117,7 @@ void OverlayGrid::makeGrid(Graph &_g, double _alpha, double _gamma) // for hazar
             if((distance > 0) && (coordinates.at(i).at(0)==coordinates.at(j).at(0) || coordinates.at(i).at(1)==coordinates.at(j).at(1)))
                 distance -= 1;
             else if(coordinates.at(i).at(0)!=coordinates.at(j).at(0) && coordinates.at(i).at(1)!=coordinates.at(j).at(1))
-                distance -=sqrt(2);
+                distance -= sqrt(2);
             distance = distance * sideLength;
             double hazard = 1 + distance / _alpha;  //make function that can be passed into this function
             hazard = pow(hazard, -_gamma);
