@@ -50,7 +50,7 @@ void Graph::setNodeCoordinates(vector<vector<double> > _coordinates)
 }
 
 
-void Graph::setNodeCoordinatesPoisson(double _mean, double _maxRadius, double _n, mt19937_64 _generator)
+void Graph::setNodeCoordinatesPoisson(double _mean, double _maxRadius, double _n, mt19937_64 &_generator)
 {
     nodeVector.push_back(shared_ptr<Node> (new Node()));
     nodeVector.at(0)->setCoordinates(vector<double> {0,0});

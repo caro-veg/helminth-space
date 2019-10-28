@@ -14,7 +14,7 @@ int main()
 {
     cout << "Hello world!" << endl;
 
-    unsigned seed = 1234;
+    unsigned seed = 1235;
     mt19937_64 generator(seed);
 
     int timeSteps=10;
@@ -31,7 +31,7 @@ int main()
     kdt.linkParents(kdt.getRoot());
 
     Person p(g);
-    p.setNodeNumber(108);
+    p.setNodeNumber(1);
     p.setMovementRate(3);
     p.setPredisposition(9);
 
@@ -39,7 +39,7 @@ int main()
     og.calculateSideLength(g, 5);
     og.makeGrid(g, 2, 1.2);
 
-    cout << og.getSideLength() << endl;
+    //cout << og.getSideLength() << endl;
     int x = g.getNodeVector().at(p.getNodeNumber())->getCellCoordinates().at(0);
     int y = g.getNodeVector().at(p.getNodeNumber())->getCellCoordinates().at(1);
     vector<shared_ptr<Node> > test = og.getNodesByCells().at(x).at(y);
@@ -49,15 +49,15 @@ int main()
         cout << test.at(i)->getCoordinates().at(0) << " " << test.at(i)->getCoordinates().at(1) << endl;
     }*/
     cout << endl << "Dupdup" << endl;
-    for(int i=0; i<5; ++i)
+    for(int i=0; i<20; ++i)
     {
-        cout << g.getNodeVector().at(p.getNodeNumber())->getCellCoordinates().at(0) << " " << g.getNodeVector().at(p.getNodeNumber())->getCellCoordinates().at(1) << endl;
-        cout << p.getCoordinates().at(0) << " " << p.getCoordinates().at(1) << endl;
+        //cout << g.getNodeVector().at(p.getNodeNumber())->getCellCoordinates().at(0) << " " << g.getNodeVector().at(p.getNodeNumber())->getCellCoordinates().at(1) << endl;
+        //cout << p.getCoordinates().at(0) << " " << p.getCoordinates().at(1) << endl;
         //p.relocate(generator, g, kdt, 200);
         //int prev = p.getNodeNumber();
         p.relocate(generator, g, og, 2, 1.2);
-        cout << g.getNodeVector().at(p.getNodeNumber())->getCellCoordinates().at(0) << " " << g.getNodeVector().at(p.getNodeNumber())->getCellCoordinates().at(1) << endl;
-        cout << p.getCoordinates().at(0) << " " << p.getCoordinates().at(1) << endl;
+        //cout << g.getNodeVector().at(p.getNodeNumber())->getCellCoordinates().at(0) << " " << g.getNodeVector().at(p.getNodeNumber())->getCellCoordinates().at(1) << endl;
+        //cout << p.getCoordinates().at(0) << " " << p.getCoordinates().at(1) << endl;
         //if(prev!=p.getNodeNumber()) cout << "I moved!" << endl;
         cout << endl;
     }

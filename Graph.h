@@ -30,7 +30,7 @@ public:
     void setNodeCoordinates(vector<vector<double> > _coordinates);
     //distribute nodes according to Poisson distribution: number of nodes grows linearly with distance
     //from centre node
-    void setNodeCoordinatesPoisson(double _mean, double _maxRadius, double _n, mt19937_64 _generator);
+    void setNodeCoordinatesPoisson(double _mean, double _maxRadius, double _n, mt19937_64 &_generator);
 
     void setNodeNumbers();
 

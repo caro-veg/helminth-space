@@ -26,7 +26,7 @@ void Population::setupPopulation(int _popSize)
 }
 
 
-void Population::distributePopulation(mt19937_64 _generator)
+void Population::distributePopulation(mt19937_64 &_generator)
 {
     uniform_int_distribution<int> unifDist(0, graph.getNodeVector().size()-1);
     for(unsigned i=0; i<people.size(); ++i)
@@ -38,7 +38,7 @@ void Population::distributePopulation(mt19937_64 _generator)
 }
 
 
-void Population::setupAgelessPopulation(int _popSize, double _mean, double _variance, mt19937_64 _generator)
+void Population::setupAgelessPopulation(int _popSize, double _mean, double _variance, mt19937_64 &_generator)
 {
     //create people vector
     for(int i=0; i<_popSize; ++i)
@@ -124,7 +124,7 @@ void Population::setPredispositions(vector<double> _predispositions)
     }
 }
 
-void Population::setPredispositions(double _shape, double _scale, mt19937_64 _generator)
+void Population::setPredispositions(double _shape, double _scale, mt19937_64 &_generator)
 {
     gamma_distribution<double> gammaDist(_shape, _scale);
     for(unsigned i=0; i<people.size(); ++i)
@@ -135,7 +135,7 @@ void Population::setPredispositions(double _shape, double _scale, mt19937_64 _ge
 }
 
 
-void Population::relocation(vector<double> _u, mt19937_64 _generator)
+void Population::relocation(vector<double> _u, mt19937_64 &_generator)
 {
     for(unsigned i=0; i<people.size(); ++i)
     {
@@ -148,7 +148,7 @@ void Population::relocation(vector<double> _u, mt19937_64 _generator)
 }
 
 
-void Population::relocation(mt19937_64 _generator, Graph &_g, OverlayGrid &_og, double _alpha, double _gamma)
+void Population::relocation(mt19937_64 &_generator, Graph &_g, OverlayGrid &_og, double _alpha, double _gamma)
 {
     for(unsigned i=0; i<people.size(); ++i)
     {

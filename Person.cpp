@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cmath>
 #include "Person.h"
+#include "MultinomialDistribution.h"
 
 using namespace std;
 
@@ -47,7 +48,7 @@ void Person::setMovementRate(double _movementRate)
 }
 
 
-void Person::relocate(mt19937_64 _generator)    //generalize so that this can be used as part of rejection algorithm or KD-tree --> pass vector of relevant nodes in
+void Person::relocate(mt19937_64 &_generator)    //generalize so that this can be used as part of rejection algorithm or KD-tree --> pass vector of relevant nodes in
 {                                               //and probability function to use: exponential or power low
     vector<double> probabilities;
     probabilities.reserve(graph.getNodeVector().size()-1);
@@ -84,7 +85,7 @@ void Person::relocate(mt19937_64 _generator)    //generalize so that this can be
 }
 
 
-void Person::relocate(mt19937_64 _generator, vector<shared_ptr<Node> > _targetNodes)
+void Person::relocate(mt19937_64 &_generator, vector<shared_ptr<Node> > _targetNodes)
 {
     vector<double> probabilities;
     probabilities.reserve(_targetNodes.size()-1);
@@ -119,7 +120,7 @@ void Person::relocate(mt19937_64 _generator, vector<shared_ptr<Node> > _targetNo
 }
 
 
-void Person::relocate(mt19937_64 _generator, Graph &_g, KDTree &_kd, double _cutOffRadius)
+void Person::relocate(mt19937_64 &_generator, Graph &_g, KDTree &_kd, double _cutOffRadius)
 {
     //determine position in tree
     shared_ptr<Node> focus = _g.getNodeVector().at(nodeNumber);
@@ -133,7 +134,7 @@ void Person::relocate(mt19937_64 _generator, Graph &_g, KDTree &_kd, double _cut
 }
 
 
-void Person::relocate(mt19937_64 _generator, Graph &_g, OverlayGrid &_og, double _alpha, double _gamma)
+void Person::relocate(mt19937_64 &_generator, Graph &_g, OverlayGrid &_og, double _alpha, double _gamma)
 {
     //determine position relative to overlay grid
     vector<int> gridCoords = _g.getNodeVector().at(nodeNumber)->getCellCoordinates();
@@ -143,8 +144,16 @@ void Person::relocate(mt19937_64 _generator, Graph &_g, OverlayGrid &_og, double
 
     //draw from multinomial distribution to determine which cell in grid person moves to
     //use distances from cell position (one row)
-    discrete_distribution<int> discDist1(_og.getHazards().at(position).begin(), _og.getHazards().at(position).end());
-    int newCellNumber = discDist1(_generator);
+
+    //discrete_distribution<int> discDist1(_og.getHazards().at(position).begin(), _og.getHazards().at(position).end());
+    //int newCellNumber = discDist1(_generator);
+
+    MultinomialDistribution mn1(_og.getHazards().at(position));
+    uniform_real_distribution<double> unifDist1(0.0, *max_element(mn1.getProbabilities().begin(), mn1.getProbabilities().end()));
+    double u = unifDist1(_generator);
+    cout << "u " << u << endl;
+    int newCellNumber = mn1.bisection(0, _og.getHazards().at(position).size()-1, u);
+    cout << "New cell " << newCellNumber << endl << endl;
     for(double x:_og.getHazards().at(position)) cout << x << " ";
     cout << endl;
     int newCellX = newCellNumber / yCells;
@@ -178,9 +187,15 @@ void Person::relocate(mt19937_64 _generator, Graph &_g, OverlayGrid &_og, double
         //for(double x:probabilities) cout << x << " ";
         //cout << endl;
 
-        discrete_distribution<int> discDist2(probabilities.begin(), probabilities.end());
-        int n = discDist2(_generator);
+        //discrete_distribution<int> discDist2(probabilities.begin(), probabilities.end());
+        //int n = discDist2(_generator);
+        MultinomialDistribution mn2(probabilities);
+        uniform_real_distribution<double> unifDist2(0.0, *max_element(mn2.getProbabilities().begin(), mn2.getProbabilities().end()));
+        u = unifDist2(_generator);
+        //cout << "u " << u << endl;
+        int n = mn2.bisection(0, probabilities.size(), u);
         int newNodeNumber = targetNodes.at(n)->getNodeNumber();
+        //cout << "New Node: " << n << endl << endl;
         setNodeNumber(newNodeNumber);
     }
 }
