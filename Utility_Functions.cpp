@@ -48,7 +48,7 @@ shared_ptr<Node> findMedian(vector<shared_ptr<Node> > &_a, int _dim)
 double calculateDistance(shared_ptr<Node> _a, shared_ptr<Node> _b)
 {
     if(_a==nullptr || _b==nullptr)
-        return 1e12;
+        return 1.0e16;
 
     double distance = (_a->getCoordinates().at(0) - _b->getCoordinates().at(0)) * (_a->getCoordinates().at(0) - _b->getCoordinates().at(0))
                         + (_a->getCoordinates().at(1) - _b->getCoordinates().at(1)) * (_a->getCoordinates().at(1) - _b->getCoordinates().at(1)) ;

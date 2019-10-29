@@ -40,9 +40,13 @@ public:
     void setPredisposition(double _predisposition);
     void setMovementRate(double _movementRate);
 
+    //draw new node from all nodes in graph
     void relocate(mt19937_64 &_generator);
+    //draw new node from vector of target nodes passed into function
     void relocate(mt19937_64 &_generator, vector<shared_ptr<Node> > _targetNodes);
+    //draw new node from all nodes in graph, use rejection algorithm for optimisation
     void relocate(mt19937_64 &_generator, Graph &_g, OverlayGrid &_og, double _alpha, double _gamma);
+    //draw new node from all nodes in graph, use kd-tree for optimisation
     void relocate(mt19937_64 &_generator, Graph &_g, KDTree &_kd, double _cutOffRadius);
 
     void aging(double _ageInterval);

@@ -59,7 +59,6 @@ int MultinomialDistribution::bisection(int _a, int _b, double _u)
     {
         c = round((_a + _b) / 2);
         //cout << "Root finding: " << c << " " << getProb(c) << endl;
-        double d;
 
         if(_u > getProb(c) && _u <= getProb(c+1))
             return c+1;

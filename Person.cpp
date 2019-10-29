@@ -88,7 +88,9 @@ void Person::relocate(mt19937_64 &_generator)    //generalize so that this can b
 void Person::relocate(mt19937_64 &_generator, vector<shared_ptr<Node> > _targetNodes)
 {
     vector<double> probabilities;
-    probabilities.reserve(_targetNodes.size()-1);
+    if(_targetNodes.size() > 0)
+    {
+        probabilities.reserve(_targetNodes.size()-1);
     //calculate probabilities to move to each node
 
     for(unsigned i=0; i<_targetNodes.size(); ++i)
@@ -117,6 +119,7 @@ void Person::relocate(mt19937_64 &_generator, vector<shared_ptr<Node> > _targetN
     //cout << nodeNumber << endl;
     int newNodeNumber = discDist(_generator);
     setNodeNumber(newNodeNumber);
+    }
 }
 
 
@@ -145,17 +148,17 @@ void Person::relocate(mt19937_64 &_generator, Graph &_g, OverlayGrid &_og, doubl
     //draw from multinomial distribution to determine which cell in grid person moves to
     //use distances from cell position (one row)
 
-    //discrete_distribution<int> discDist1(_og.getHazards().at(position).begin(), _og.getHazards().at(position).end());
-    //int newCellNumber = discDist1(_generator);
+    discrete_distribution<int> discDist1(_og.getHazards().at(position).begin(), _og.getHazards().at(position).end());
+    int newCellNumber = discDist1(_generator);
 
-    MultinomialDistribution mn1(_og.getHazards().at(position));
-    uniform_real_distribution<double> unifDist1(0.0, *max_element(mn1.getProbabilities().begin(), mn1.getProbabilities().end()));
-    double u = unifDist1(_generator);
-    cout << "u " << u << endl;
-    int newCellNumber = mn1.bisection(0, _og.getHazards().at(position).size()-1, u);
-    cout << "New cell " << newCellNumber << endl << endl;
-    for(double x:_og.getHazards().at(position)) cout << x << " ";
-    cout << endl;
+    //MultinomialDistribution mn1(_og.getHazards().at(position));
+    //uniform_real_distribution<double> unifDist1(0.0, *max_element(mn1.getProbabilities().begin(), mn1.getProbabilities().end()));
+    //double u = unifDist1(_generator);
+    //cout << "u " << u << endl;
+    //int newCellNumber = mn1.bisection(0, _og.getHazards().at(position).size()-1, u);
+    //cout << "New cell " << newCellNumber << endl << endl;
+    //for(double x:_og.getHazards().at(position)) cout << x << " ";
+    //cout << endl;
     int newCellX = newCellNumber / yCells;
     int newCellY = newCellNumber % yCells;
 
@@ -187,13 +190,13 @@ void Person::relocate(mt19937_64 &_generator, Graph &_g, OverlayGrid &_og, doubl
         //for(double x:probabilities) cout << x << " ";
         //cout << endl;
 
-        //discrete_distribution<int> discDist2(probabilities.begin(), probabilities.end());
-        //int n = discDist2(_generator);
-        MultinomialDistribution mn2(probabilities);
-        uniform_real_distribution<double> unifDist2(0.0, *max_element(mn2.getProbabilities().begin(), mn2.getProbabilities().end()));
-        u = unifDist2(_generator);
+        discrete_distribution<int> discDist2(probabilities.begin(), probabilities.end());
+        int n = discDist2(_generator);
+        //MultinomialDistribution mn2(probabilities);
+        //uniform_real_distribution<double> unifDist2(0.0, *max_element(mn2.getProbabilities().begin(), mn2.getProbabilities().end()));
+        //u = unifDist2(_generator);
         //cout << "u " << u << endl;
-        int n = mn2.bisection(0, probabilities.size(), u);
+        //int n = mn2.bisection(0, probabilities.size(), u);
         int newNodeNumber = targetNodes.at(n)->getNodeNumber();
         //cout << "New Node: " << n << endl << endl;
         setNodeNumber(newNodeNumber);

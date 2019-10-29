@@ -98,26 +98,30 @@ void KDTree::findNodesWithinRadius(shared_ptr<Node> _focus, double _radius, vect
         double distance;
         distance = calculateDistance(_focus, node);
         if(distance <= _radius)
-            _nodes.push_back(node);
+        {
+            //_nodes.push_back(node);
+        }
+
         shared_ptr<Node> parent = node->getParent();
         if(abs(_focus->getCoordinates().at(node->getDimension()) - node->getCoordinates().at(node->getDimension())) <= _radius)
         {
             if(node->getDirection() == 1)
             {
+                //cout << "left" << endl;
                 findNodesWithinRadius(_focus, node->getLeft(), _radius, _nodes);
             }
 
             else if(node->getDirection() == 2)
             {
-                findNodesWithinRadius(_focus, node->getRight(), _radius, _nodes);
+                //cout << "right" << endl;
+                //findNodesWithinRadius(_focus, node->getRight(), _radius, _nodes);
             }
-
         }
         node = parent;
     }
 
-    findNodesWithinRadius(_focus, _focus->getLeft(), _radius, _nodes);
-    findNodesWithinRadius(_focus, _focus->getRight(), _radius, _nodes);
+    //findNodesWithinRadius(_focus, _focus->getLeft(), _radius, _nodes);
+    //findNodesWithinRadius(_focus, _focus->getRight(), _radius, _nodes);
 }
 
 
@@ -128,9 +132,14 @@ void KDTree::findNodesWithinRadius(shared_ptr<Node> _focus, shared_ptr<Node> _co
 
     double distance = calculateDistance(_focus, _comp);
     if(distance <= _radius)
+    {
+        cout << distance << " " << _radius << endl;
         _nodes.push_back(_comp);
-    findNodesWithinRadius(_focus, _comp->getLeft(), _radius, _nodes);
-    findNodesWithinRadius(_focus, _comp->getRight(), _radius, _nodes);
+        //findNodesWithinRadius(_focus, _comp->getLeft(), _radius, _nodes);
+        //findNodesWithinRadius(_focus, _comp->getRight(), _radius, _nodes);
+    }
+    else
+        return;
 }
 
 
