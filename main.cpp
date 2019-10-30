@@ -34,18 +34,20 @@ int main(int arc, char *argv[])
     Output out;
 
     Graph g;
-    g.setNodeCoordinatesPoisson(4, 10, 10, generator);
+    g.setNodeCoordinatesPoisson(4, 1000, 1000, generator);
     g.setNodeNumbers();
 
-    KDTree kd;
-    kd.setRoot(kd.makeTree(g));
-    kd.linkParents(kd.getRoot());
-    //kd.printTree();
+
+    //KDTree kd;
+    //kd.setRoot(kd.makeTree(g));
+    //kd.linkParents(kd.getRoot());
+    //g.setNodeNumbers();
 
 
-    //OverlayGrid og;
-    //og.calculateSideLength(g, 10);
-    //og.makeGrid(g, 6, 1.6);
+    OverlayGrid og;
+    og.calculateSideLength(g, 10);
+    og.makeGrid(g, 3, 1.6);
+
 
     Person p(g);
     p.setMovementRate(3);
@@ -56,25 +58,30 @@ int main(int arc, char *argv[])
     uniform_int_distribution<int> unifDist(0, g.getNodeVector().size()-1);
 
 
-
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<1000; ++i)
     {
+        //cout << "######## " << i << " ############" << endl;
         vector<double> coordinates1;
         vector<double> coordinates2;
-        int position = unifDist(generator);
-        p.setNodeNumber(position);
+        p.setNodeNumber(g.getNodeVector().at(0)->getNodeNumber());
         coordinates1.push_back(static_cast<double>(i));
         coordinates1.push_back(p.getCoordinates().at(0));
         coordinates1.push_back(p.getCoordinates().at(1));
-        p.relocate(generator, g, kd, 1);
+        //cout << "prior " << p.getCoordinates().at(0) << " " << p.getCoordinates().at(1) << endl;
+        //p.relocate(generator, g, kd, 3000);
+        //p.relocate(generator);
+        p.relocate(generator, g, og, 3, 1.6);
         coordinates2.push_back(static_cast<double>(i));
+        //cout << "post " << p.getCoordinates().at(0) << " " << p.getCoordinates().at(1) << endl;
         coordinates2.push_back(p.getCoordinates().at(0));
         coordinates2.push_back(p.getCoordinates().at(1));
         trajectories.push_back(coordinates1);
         trajectories.push_back(coordinates2);
 
-        double distance = calculateDistance(g.getNodeVector().at(position), g.getNodeVector().at(p.getNodeNumber()));
+        double distance = (coordinates1.at(0) - coordinates2.at(0)) * (coordinates1.at(0) - coordinates2.at(0)) + (coordinates1.at(1) - coordinates2.at(1)) * (coordinates1.at(1) -coordinates2.at(1));
+        distance = sqrt(distance);
         distances.push_back(distance);
+        //cout << endl << endl;
     }
 
     ofstream file;
@@ -95,7 +102,6 @@ int main(int arc, char *argv[])
         file << distances.at(i) << endl;
     }
     file.close();
-
 
     return 0;
 }

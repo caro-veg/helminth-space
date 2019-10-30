@@ -36,6 +36,7 @@ public:
     ~Person();
 
     void setNodeNumber(int _nodeNumber);
+    void setNodeNumberOnly(int _nodeNumber);
     void setCoordinates(vector<double> coordinates);
     void setPredisposition(double _predisposition);
     void setMovementRate(double _movementRate);

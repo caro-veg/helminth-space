@@ -15,6 +15,9 @@ private:
 
     shared_ptr<Node> makeTree(vector<shared_ptr<Node> > &_nodes, int _dim, int _k, int _direction);
     void findNodesWithinRadius(shared_ptr<Node> _focus, shared_ptr<Node> _comp, double _radius, vector<shared_ptr<Node> > &_nodes);
+
+    void findNodesWithinRadius2(shared_ptr<Node> _focus, shared_ptr<Node> _comp, double _radius, vector<shared_ptr<Node> > &_nodes);
+
     int nodeNumber;
 
     void printTree(shared_ptr<Node> _root, int _level);
@@ -28,6 +31,8 @@ public:
     shared_ptr<Node> makeTree(Graph &_g);
     void linkParents(shared_ptr<Node> _root);
     void findNodesWithinRadius(shared_ptr<Node> _focus, double _radius, vector<shared_ptr<Node> > &_nodes);
+
+    void findNodesWithinRadius2(shared_ptr<Node> _focus, double _radius, vector<shared_ptr<Node> > &_nodes);
 
     shared_ptr<Node> getRoot();
     int getNodeNumber();

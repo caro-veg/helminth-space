@@ -32,6 +32,11 @@ void Person::setNodeNumber(int _nodeNumber)
         coordinates = graph.getNodeVector().at(nodeNumber)->getCoordinates();
 }
 
+void Person::setNodeNumberOnly(int _nodeNumber)
+{
+    nodeNumber = _nodeNumber;
+}
+
 void Person::setCoordinates(vector<double> _coordinates)
 {
     coordinates = _coordinates;
@@ -88,37 +93,44 @@ void Person::relocate(mt19937_64 &_generator)    //generalize so that this can b
 void Person::relocate(mt19937_64 &_generator, vector<shared_ptr<Node> > _targetNodes)
 {
     vector<double> probabilities;
+    //cout << "Number of target nodes: " << _targetNodes.size() << endl;
     if(_targetNodes.size() > 0)
     {
         probabilities.reserve(_targetNodes.size()-1);
     //calculate probabilities to move to each node
 
-    for(unsigned i=0; i<_targetNodes.size(); ++i)
-    {
-        if(i != nodeNumber)
+        for(unsigned i=0; i<_targetNodes.size(); ++i)
         {
-            //calculate distances between current node and each other node in network
-            double temp = (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(0) - _targetNodes.at(i)->getCoordinates().at(0)) * (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(0) - _targetNodes.at(i)->getCoordinates().at(0))
-            + (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(1) - _targetNodes.at(i)->getCoordinates().at(1)) * (graph.getNodeVector().at(nodeNumber)->getCoordinates().at(1) - _targetNodes.at(i)->getCoordinates().at(1));
-            double distance = sqrt(temp);
-            double probability = _targetNodes.at(i)->getFitness() * exp(-distance/predisposition) / predisposition;
-            probabilities.push_back(probability);
+            if(i != nodeNumber)
+            {
+                //calculate distances between current node and each other node in network
+                double temp = (getCoordinates().at(0) - _targetNodes.at(i)->getCoordinates().at(0)) * (getCoordinates().at(0) - _targetNodes.at(i)->getCoordinates().at(0))
+                + (getCoordinates().at(1) - _targetNodes.at(i)->getCoordinates().at(1)) * (getCoordinates().at(1) - _targetNodes.at(i)->getCoordinates().at(1));
+                double distance = sqrt(temp);
+                double probability = _targetNodes.at(i)->getFitness() * exp(-distance/predisposition) / predisposition;
+                probabilities.push_back(probability);
+            }
+            else
+                probabilities.push_back(0);
+
         }
-        else
-            probabilities.push_back(0);
+        //for(double x:probabilities) cout << x << " ";
+        //cout << endl;
 
-    }
-    //for(double x:probabilities) cout << x << " ";
-    //cout << endl;
+        //draw from multinomial distribution to determine which node person moves to
+        discrete_distribution<int> discDist(probabilities.begin(), probabilities.end());
+        //for(double x:discDist.probabilities()) cout << x << " ";
+        //cout << endl;
 
-    //draw from multinomial distribution to determine which node person moves to
-    discrete_distribution<int> discDist(probabilities.begin(), probabilities.end());
-    //for(double x:discDist.probabilities()) cout << x << " ";
-    //cout << endl;
-
-    //cout << nodeNumber << endl;
-    int newNodeNumber = discDist(_generator);
-    setNodeNumber(newNodeNumber);
+        //cout << nodeNumber << endl;
+        int n = discDist(_generator);
+        //cout << "n " << n << endl;
+        //cout << _targetNodes.at(n)->getCoordinates().at(0) << " " << _targetNodes.at(n)->getCoordinates().at(1) << endl;
+        int newNodeNumber = _targetNodes.at(n)->getNodeNumber();
+        //cout << newNodeNumber << endl;
+        setNodeNumberOnly(newNodeNumber);
+        //cout << nodeNumber << endl;
+        setCoordinates(_targetNodes.at(n)->getCoordinates());
     }
 }
 
@@ -131,7 +143,10 @@ void Person::relocate(mt19937_64 &_generator, Graph &_g, KDTree &_kd, double _cu
 
     //search points within cut-off radius (KD tree function)
     _kd.findNodesWithinRadius(focus, _cutOffRadius, targetNodes);
-
+    //cout << endl << "Target nodes: " << endl;
+    //for(unsigned i=0; i<targetNodes.size(); ++i)
+    //    cout << targetNodes.at(i)->getCoordinates().at(0) << " " << targetNodes.at(i)->getCoordinates().at(1) << endl;
+    //cout << endl;
     //pass points to relocate function --> choose which of these points to move to
     relocate(_generator, targetNodes);
 }
