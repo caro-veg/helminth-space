@@ -34,7 +34,10 @@ int main(int arc, char *argv[])
     Output out;
 
     Graph g;
+    //g.createNodes(5);
     g.setNodeCoordinatesPoisson(4, 1000, 1000, generator);
+    //vector<vector<double> > coordinates{{0,0}, {-4, -4}, {-4, 4}, {4, 4}, {4, -4}};
+    //g.setNodeCoordinates(coordinates);
     g.setNodeNumbers();
 
 
@@ -42,11 +45,28 @@ int main(int arc, char *argv[])
     //kd.setRoot(kd.makeTree(g));
     //kd.linkParents(kd.getRoot());
     //g.setNodeNumbers();
-
+    //cout << g.getNodeVector().size() << endl;
 
     OverlayGrid og;
-    og.calculateSideLength(g, 10);
+    og.calculateSideLength(g, 9);
     og.makeGrid(g, 3, 1.6);
+
+    cout << og.getSideLength() << endl;
+    cout << og.getXCells() << " " << og.getYCells() << endl;
+    cout << og.getMinX() << " " << og.getMaxX() << " " << og.getMinY() << " " << og.getMaxY() << endl << endl;
+    cout << og.getHazards().size() << " " << og.getHazards().at(0).size() << endl << endl;
+
+    ofstream file;
+    file.open("hazards.csv");
+    for(unsigned i=0; i<og.getHazards().size(); ++i)
+    {
+        for(unsigned j=0; j<og.getHazards().at(i).size(); ++j)
+        {
+            file << og.getHazards().at(i).at(j) << ",";
+        }
+        file << endl;
+    }
+    file.close();
 
 
     Person p(g);
@@ -58,7 +78,7 @@ int main(int arc, char *argv[])
     uniform_int_distribution<int> unifDist(0, g.getNodeVector().size()-1);
 
 
-    for(int i=0; i<1000; ++i)
+   for(int i=0; i<1000; ++i)
     {
         //cout << "######## " << i << " ############" << endl;
         vector<double> coordinates1;
@@ -84,7 +104,7 @@ int main(int arc, char *argv[])
         //cout << endl << endl;
     }
 
-    ofstream file;
+    //ofstream file;
     file.open("trajectories_single-jump_single-person.csv");
     for(unsigned i=0; i<trajectories.size(); ++i)
     {
