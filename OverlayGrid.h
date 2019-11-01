@@ -17,8 +17,8 @@ private:
     double minY;
     double maxY;
 
-    int xCells;
-    int yCells;
+    int rows;
+    int columns;
 
     vector<vector<double> > hazards;
     vector<vector<vector<shared_ptr<Node> > > > nodesByCells;
@@ -32,8 +32,13 @@ public:
                                 //needs to be run before distances between cells can be calculated
 
     double getSideLength();
-    int getXCells();
-    int getYCells();
+    int getRows();
+    int getColumns();
+    double getMinX();
+    double getMaxX();
+    double getMinY();
+    double getMaxY();
+
     const vector<vector<double> > &getHazards();
     vector<vector<vector<shared_ptr<Node> > > > getNodesByCells();
 };

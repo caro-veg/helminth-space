@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Node::Node() : fitness(1), left(nullptr), right(nullptr), parent(nullptr), dimension(0), direction(0)
+Node::Node() : nodeNumber(0), fitness(1), cellNumber(0), left(nullptr), right(nullptr), parent(nullptr), dimension(0), direction(0)
 {
 
 }
@@ -29,6 +29,11 @@ void Node::setFitness(double _fitness)
 void Node::setCellCoordinates(vector<int> _cellCoordinates)
 {
     cellCoordinates = _cellCoordinates;
+}
+
+void Node::setCellNumber(int _cellNumber)
+{
+    cellNumber = _cellNumber;
 }
 
 void Node::setLeft(shared_ptr<Node> _node)
@@ -74,6 +79,11 @@ double Node::getFitness()
 vector<int> Node::getCellCoordinates()
 {
     return cellCoordinates;
+}
+
+int Node::getCellNumber()
+{
+    return cellNumber;
 }
 
 shared_ptr<Node> Node::getLeft()

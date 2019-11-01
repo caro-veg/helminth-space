@@ -16,6 +16,7 @@ private:
 
     //needed for rejection algorithm and super-node kd-tree
     vector<int> cellCoordinates;
+    int cellNumber;
 
     //needed for kd-tree
     shared_ptr<Node> left, right, parent;
@@ -30,7 +31,10 @@ public:
     void setCoordinates(vector<double> _coordinates);
     void setNodeNumber(int _nodeNumber);
     void setFitness(double _fitness);
+
     void setCellCoordinates(vector<int> _cellCoordinates);
+    void setCellNumber(int _cellNumber);
+
     void setLeft(shared_ptr<Node> _node);
     void setRight(shared_ptr<Node> _node);
     void setParent(shared_ptr<Node> _node);
@@ -40,7 +44,10 @@ public:
     vector<double> getCoordinates();
     int getNodeNumber();
     double getFitness();
+
     vector<int> getCellCoordinates();
+    int getCellNumber();
+
     shared_ptr<Node> getLeft();
     shared_ptr<Node> getRight();
     shared_ptr<Node> getParent();

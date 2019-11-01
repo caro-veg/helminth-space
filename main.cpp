@@ -34,12 +34,12 @@ int main(int arc, char *argv[])
     Output out;
 
     Graph g;
-    //g.createNodes(5);
-    g.setNodeCoordinatesPoisson(4, 1000, 1000, generator);
-    //vector<vector<double> > coordinates{{0,0}, {-4, -4}, {-4, 4}, {4, 4}, {4, -4}};
-    //g.setNodeCoordinates(coordinates);
+    g.createNodes(5);
+    //g.setNodeCoordinatesPoisson(4, 100, 100, generator);
+    vector<vector<double> > coordinates{{0,0}, {-4, -4}, {-4, 4}, {4, 4}, {4, -4}};
+    g.setNodeCoordinates(coordinates);
     g.setNodeNumbers();
-
+    cout << "Number of nodes: " << g.getNodeVector().size() << endl << endl;
 
     //KDTree kd;
     //kd.setRoot(kd.makeTree(g));
@@ -48,26 +48,38 @@ int main(int arc, char *argv[])
     //cout << g.getNodeVector().size() << endl;
 
     OverlayGrid og;
-    og.calculateSideLength(g, 9);
+    og.calculateSideLength(g, 5);
     og.makeGrid(g, 3, 1.6);
 
     cout << og.getSideLength() << endl;
-    cout << og.getXCells() << " " << og.getYCells() << endl;
+    cout << og.getRows() << " " << og.getColumns() << endl;
     cout << og.getMinX() << " " << og.getMaxX() << " " << og.getMinY() << " " << og.getMaxY() << endl << endl;
     cout << og.getHazards().size() << " " << og.getHazards().at(0).size() << endl << endl;
 
-    ofstream file;
-    file.open("hazards.csv");
+    cout << "Hazards:" << endl;
     for(unsigned i=0; i<og.getHazards().size(); ++i)
     {
         for(unsigned j=0; j<og.getHazards().at(i).size(); ++j)
         {
-            file << og.getHazards().at(i).at(j) << ",";
+            cout << og.getHazards().at(i).at(j) << " ";
         }
-        file << endl;
+        cout << endl;
     }
-    file.close();
+    cout << endl;
 
+    int sum = 0;
+    cout << "Nodes by cells: " << og.getNodesByCells().size() << " " << og.getNodesByCells().at(0).size() << endl;
+    for(unsigned i=0; i<og.getNodesByCells().size(); ++i)
+    {
+        for(unsigned j=0; j<og.getNodesByCells().at(i).size(); ++j)
+        {
+            cout << og.getNodesByCells().at(i).at(j).size() << " ";
+            sum = sum + og.getNodesByCells().at(i).at(j).size();
+        }
+        cout << endl;
+    }
+    cout << endl;
+    cout << sum << endl << endl;
 
     Person p(g);
     p.setMovementRate(3);
@@ -78,7 +90,7 @@ int main(int arc, char *argv[])
     uniform_int_distribution<int> unifDist(0, g.getNodeVector().size()-1);
 
 
-   for(int i=0; i<1000; ++i)
+   for(int i=0; i<100; ++i)
     {
         //cout << "######## " << i << " ############" << endl;
         vector<double> coordinates1;
@@ -98,13 +110,13 @@ int main(int arc, char *argv[])
         trajectories.push_back(coordinates1);
         trajectories.push_back(coordinates2);
 
-        double distance = (coordinates1.at(0) - coordinates2.at(0)) * (coordinates1.at(0) - coordinates2.at(0)) + (coordinates1.at(1) - coordinates2.at(1)) * (coordinates1.at(1) -coordinates2.at(1));
+        double distance = (coordinates1.at(0) - coordinates2.at(0)) * (coordinates1.at(0) - coordinates2.at(0)) + (coordinates1.at(1) - coordinates2.at(1)) * (coordinates1.at(1) - coordinates2.at(1));
         distance = sqrt(distance);
         distances.push_back(distance);
         //cout << endl << endl;
     }
 
-    //ofstream file;
+    ofstream file;
     file.open("trajectories_single-jump_single-person.csv");
     for(unsigned i=0; i<trajectories.size(); ++i)
     {

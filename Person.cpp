@@ -156,10 +156,12 @@ void Person::relocate(mt19937_64 &_generator, Graph &_g, OverlayGrid &_og, doubl
 {
     //determine position relative to overlay grid
     vector<int> gridCoords = _g.getNodeVector().at(nodeNumber)->getCellCoordinates();
-    int xCells = _og.getXCells();
-    int yCells = _og.getYCells();
-    int position = gridCoords.at(0) * yCells + gridCoords.at(1);
-    //cout << "Old cell " << gridCoords.at(0) << " " << gridCoords.at(1) << endl;
+    int position = _g.getNodeVector().at(nodeNumber)->getCellNumber();
+    cout << "Old position " << position << endl;
+    cout << "Old cell " << gridCoords.at(0) << " " << gridCoords.at(1) << endl;
+
+    int columns = _og.getColumns();
+    int rows = _og.getRows();
 
     //draw from multinomial distribution to determine which cell in grid person moves to
     //use distances from cell position (one row)
@@ -173,12 +175,13 @@ void Person::relocate(mt19937_64 &_generator, Graph &_g, OverlayGrid &_og, doubl
     double u = unifDist1(_generator);
     //cout << "u " << u << endl;
     int newCellNumber = mn1.bisection(0, _og.getHazards().at(position).size()-1, u);
+    double totalCellHazard = _og.getHazards().at(position).at(newCellNumber);
     //for(double x:_og.getHazards().at(position)) cout << x << " ";
     //cout << endl;
-    int newCellX = newCellNumber / yCells;
-    int newCellY = newCellNumber % yCells;
-    //cout << newCellNumber << endl;
-    //cout << "target cell: " << newCellX << " " << newCellY << endl;
+    int newCellY = newCellNumber % columns;
+    int newCellX = newCellNumber / columns;
+    cout << newCellNumber << endl;
+    cout << "target cell: " << newCellX << " " << newCellY << endl;
 
     //relocate to one of the nodes in the chosen cell
     vector<shared_ptr<Node> > targetNodes = _og.getNodesByCells().at(newCellX).at(newCellY);
@@ -188,6 +191,7 @@ void Person::relocate(mt19937_64 &_generator, Graph &_g, OverlayGrid &_og, doubl
         vector<double> probabilities;
         probabilities.reserve(targetNodes.size() - 1);
 
+        double sumProbs = 0;
         for(unsigned i=0; i<targetNodes.size(); ++i)
         {
             if(targetNodes.at(i)->getNodeNumber() != nodeNumber)
@@ -195,14 +199,26 @@ void Person::relocate(mt19937_64 &_generator, Graph &_g, OverlayGrid &_og, doubl
                 double temp = (targetNodes.at(i)->getCoordinates().at(0) - _g.getNodeVector().at(nodeNumber)->getCoordinates().at(0)) * (targetNodes.at(i)->getCoordinates().at(0) - _g.getNodeVector().at(nodeNumber)->getCoordinates().at(0))
                             + (targetNodes.at(i)->getCoordinates().at(1) - _g.getNodeVector().at(nodeNumber)->getCoordinates().at(1)) * (targetNodes.at(i)->getCoordinates().at(1) - _g.getNodeVector().at(nodeNumber)->getCoordinates().at(1));
 
+                cout << targetNodes.at(i)->getCoordinates().at(0) << " " << targetNodes.at(i)->getCoordinates().at(1) <<endl;
+                cout << _g.getNodeVector().at(nodeNumber)->getCoordinates().at(0) << " " << _g.getNodeVector().at(nodeNumber)->getCoordinates().at(1) << endl;
+                cout << coordinates.at(0) << " " << coordinates.at(1) << endl << endl;
+
                 double distance = sqrt(temp);
                 double probability = 1 + distance / _alpha;
                 probability = pow(probability, -_gamma);
                 probabilities.push_back(probability);
+
+                cout << distance << " " << probability << " " << sumProbs;
+
+                sumProbs = sumProbs + probability;
+
+                cout << " " << sumProbs << endl << endl;
             }
             else
                 probabilities.push_back(0);
         }
+        probabilities.push_back(totalCellHazard - sumProbs);
+        //cout << totalCellHazard << " " << sumProbs << endl << endl;
         //for(double x:probabilities) cout << x << " ";
         //cout << endl;
 
@@ -213,9 +229,13 @@ void Person::relocate(mt19937_64 &_generator, Graph &_g, OverlayGrid &_og, doubl
         //u = unifDist2(_generator);
         //cout << "u " << u << endl;
         //int n = mn2.bisection(0, probabilities.size(), u);
-        int newNodeNumber = targetNodes.at(n)->getNodeNumber();
-        //cout << "New Node: " << n << endl << endl;
-        setNodeNumber(newNodeNumber);
+        if(n < targetNodes.size())
+        {
+            int newNodeNumber = targetNodes.at(n)->getNodeNumber();
+            //cout << "New Node: " << n << endl << endl;
+            setNodeNumber(newNodeNumber);
+        }
+
     }
 }
 
