@@ -34,9 +34,14 @@ int main(int arc, char *argv[])
     Output out;
 
     Graph g;
-    g.createNodes(5);
+    g.createNodes(3);
     //g.setNodeCoordinatesPoisson(4, 100, 100, generator);
-    vector<vector<double> > coordinates{{0,0}, {-4, -4}, {-4, 4}, {4, 4}, {4, -4}};
+    vector<vector<double> > coordinates{{0,0}, {-4, -4}, {-4, 4}/*, {4, 4}, {4, -4}*/};
+    /*vector<vector<double> > coordinates;
+    for(int i=0; i<100; ++i)
+    {
+        coordinates.push_back({i, i});
+    }*/
     g.setNodeCoordinates(coordinates);
     g.setNodeNumbers();
     cout << "Number of nodes: " << g.getNodeVector().size() << endl << endl;
@@ -48,7 +53,7 @@ int main(int arc, char *argv[])
     //cout << g.getNodeVector().size() << endl;
 
     OverlayGrid og;
-    og.calculateSideLength(g, 5);
+    og.calculateSideLength(g, 2);
     og.makeGrid(g, 3, 1.6);
 
     cout << og.getSideLength() << endl;
@@ -90,7 +95,7 @@ int main(int arc, char *argv[])
     uniform_int_distribution<int> unifDist(0, g.getNodeVector().size()-1);
 
 
-   for(int i=0; i<100; ++i)
+   for(int i=0; i<1000; ++i)
     {
         //cout << "######## " << i << " ############" << endl;
         vector<double> coordinates1;
@@ -116,6 +121,18 @@ int main(int arc, char *argv[])
         //cout << endl << endl;
     }
 
+    /*for(int i=0; i<og.getNodesByCells().size(); ++i)
+    {
+        for(int j=0; j<og.getNodesByCells().at(i).size(); ++j)
+        {
+            if(og.getNodesByCells().at(i).at(j).size() > 0)
+            {
+                cout << "Cell coordinates: " << og.getNodesByCells().at(i).at(j).at(0)->getCellCoordinates().at(0) << " " << og.getNodesByCells().at(i).at(j).at(0)->getCellCoordinates().at(1) << endl;
+                cout << "Node coordinates: " << og.getNodesByCells().at(i).at(j).at(0)->getCoordinates().at(0) << " " << og.getNodesByCells().at(i).at(j).at(0)->getCoordinates().at(1) << endl;
+            }
+        }
+    }*/
+
     ofstream file;
     file.open("trajectories_single-jump_single-person.csv");
     for(unsigned i=0; i<trajectories.size(); ++i)
@@ -134,6 +151,8 @@ int main(int arc, char *argv[])
         file << distances.at(i) << endl;
     }
     file.close();
+
+    out.printToCsvNodeCoordinates(g, "coordinates");
 
     return 0;
 }

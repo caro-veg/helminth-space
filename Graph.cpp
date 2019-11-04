@@ -2,6 +2,7 @@
 #include <cmath>
 #include "Graph.h"
 
+
 using namespace std;
 
 
@@ -64,6 +65,46 @@ void Graph::setNodeCoordinatesPoisson(double _mean, double _maxRadius, double _n
     for(int i=1; i<(_n-1); ++i)
     {
         double r1 = i * deltaR;
+        int deltaNodes = poissonDist(_generator);
+
+        for(int j=0; j<deltaNodes; ++j)
+        {
+            nodeVector.push_back(shared_ptr<Node> (new Node()));
+            double phi = unifDist360(_generator);
+            double delta = unifDistDeltaR(_generator);
+            double r = r1 + delta;
+            double x = r * cos(phi);
+            double y = r * sin(phi);
+            nodeVector.back()->setCoordinates(vector<double> {x, y});
+        }
+    }
+}
+
+
+void Graph::setNodeCoordinatesPoissonDensity(double _mean, double _maxRadius, double _n, mt19937_64 &_generator)
+{
+    nodeVector.push_back(shared_ptr<Node> (new Node()));
+    nodeVector.at(0)->setCoordinates(vector<double> {0,0});
+
+    double deltaR = _maxRadius / _n;
+
+    double pi = atan(1) * 4;
+
+    uniform_real_distribution<double> unifDist360(0, 360);
+    uniform_real_distribution<double> unifDistDeltaR(0, deltaR);
+
+    for(int i=1; i<(_n-1); ++i)
+    {
+        double r1 = i * deltaR;
+        double areaRatio = 1;
+        if(i>1)
+        {
+            areaRatio = (r1 * r1 * pi) / ((i-1) * deltaR * (i-1) * deltaR * pi);
+        }
+
+
+        //cout << "Area Ratio: " << areaRatio << endl;
+        poisson_distribution<int> poissonDist(_mean*areaRatio);
         int deltaNodes = poissonDist(_generator);
 
         for(int j=0; j<deltaNodes; ++j)

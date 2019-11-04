@@ -31,18 +31,18 @@ void OverlayGrid::calculateSideLength(Graph &_g, int _numberOfCells)
 
     if(xLength < yLength)
     {
-        columns = _numberOfCells;
+        rows = _numberOfCells;
         sideLength = xLength / static_cast<double>(_numberOfCells);
-        rows = ceil(yLength / sideLength);
-        maxY = minY + rows * sideLength;
+        columns = ceil(yLength / sideLength);
+        maxY = minY + columns * sideLength;
     }
 
     else
     {
-        rows = _numberOfCells;
+        columns = _numberOfCells;
         sideLength = yLength / static_cast<double>(_numberOfCells);
-        columns = ceil(xLength / sideLength);
-        maxX = minX + columns * sideLength;
+        rows = ceil(xLength / sideLength);
+        maxX = minX + rows * sideLength;
     }
 
 }
@@ -52,6 +52,7 @@ void OverlayGrid::makeGrid(Graph &_g, double _alpha, double _gamma) // for hazar
 {
     //count villages in each grid cell
     int position = -1;
+    vector<vector<shared_ptr<Node> > > nodesByCellsLong;
     for(int i=0; i<rows; ++i)
     {
         vector<vector<shared_ptr<Node> > > temp1;
@@ -63,20 +64,19 @@ void OverlayGrid::makeGrid(Graph &_g, double _alpha, double _gamma) // for hazar
 
             for(unsigned k=0; k<_g.getNodeVector().size(); ++k)
             {
-                //cout << i << " " << j << " " << k << " " << _g.getNodeVector().at(k)->getCoordinates().at(1) << endl;
                 if((_g.getNodeVector().at(k)->getCoordinates().at(0) >= (minX + i*sideLength)) &&
                    (_g.getNodeVector().at(k)->getCoordinates().at(0) < (minX + (i+1)*sideLength)) &&
                    (_g.getNodeVector().at(k)->getCoordinates().at(1) >= (minY + j*sideLength)) &&
                    (_g.getNodeVector().at(k)->getCoordinates().at(1) < (minY + (j+1)*sideLength)))
                 {
                     temp2.push_back(_g.getNodeVector().at(k));
-                    vector<int> v{j, i};
+                    vector<int> v{i, j};
                     _g.getNodeVector().at(k)->setCellCoordinates(v);
                     _g.getNodeVector().at(k)->setCellNumber(position);
-                    //cout << "set position " << v.at(0) << " " << v.at(1) << " " << position << endl << endl;
                 }
             }
             temp1.push_back(temp2);
+            nodesByCellsLong.push_back(temp2);
         }
         nodesByCells.push_back(temp1);
     }
@@ -106,29 +106,17 @@ void OverlayGrid::makeGrid(Graph &_g, double _alpha, double _gamma) // for hazar
     {
         for(unsigned j=0; j<coordinates.size(); ++j)
         {
-            //cout << "############################## " << i << " " << j << endl;
-            //double distance = (coordinates.at(i).at(0) - coordinates.at(j).at(0)) * (coordinates.at(i).at(0) - coordinates.at(j).at(0)) +
-             //                 (coordinates.at(i).at(1) - coordinates.at(j).at(1)) * (coordinates.at(i).at(1) - coordinates.at(j).at(1));
             double xDistance = (abs(coordinates.at(i).at(0) - coordinates.at(j).at(0)) - 1) * sideLength;
             if(xDistance < 0)
                 xDistance = 0;
             double yDistance = (abs(coordinates.at(i).at(1) - coordinates.at(j).at(1)) - 1) * sideLength;
             if(yDistance < 0)
                 yDistance = 0;
-            //cout << sideLength << " " << xDistance << " " << yDistance << endl;
             double distance = xDistance * xDistance + yDistance * yDistance;
             distance = sqrt(distance);
-            //if((distance > 0) && (coordinates.at(i).at(0)==coordinates.at(j).at(0) || coordinates.at(i).at(1)==coordinates.at(j).at(1)))
-              //  distance -= 1;
-            //else if((coordinates.at(i).at(0)!=coordinates.at(j).at(0)) && (coordinates.at(i).at(1)!=coordinates.at(j).at(1)))
-              //  distance -= sqrt(2);
-            //distance = distance * sideLength;
             double hazard = 1 + distance / _alpha;  //make function that can be passed into this function
             hazard = pow(hazard, -_gamma);
-            //double a = static_cast<double>(j) / static_cast<double>(columns);
-            hazards.at(i).at(j) = hazard * nodesByCells.at(j/columns).at(j%columns).size();
-            //cout << distance << " " << pow(hazard, -_gamma) << " " << hazard << " " << nodesByCells.at(j/columns).at(j%columns).size() << endl << endl;
-            //cout << endl;
+            hazards.at(i).at(j) = hazard * nodesByCellsLong.at(j).size();
         }
     }
 
@@ -187,7 +175,7 @@ double OverlayGrid::getMaxY()
     return maxY;
 }
 
-const vector<vector<double> > &OverlayGrid::getHazards()
+vector<vector<double> > OverlayGrid::getHazards()
 {
     return hazards;
 }

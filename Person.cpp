@@ -157,41 +157,45 @@ void Person::relocate(mt19937_64 &_generator, Graph &_g, OverlayGrid &_og, doubl
     //determine position relative to overlay grid
     vector<int> gridCoords = _g.getNodeVector().at(nodeNumber)->getCellCoordinates();
     int position = _g.getNodeVector().at(nodeNumber)->getCellNumber();
-    cout << "Old position " << position << endl;
-    cout << "Old cell " << gridCoords.at(0) << " " << gridCoords.at(1) << endl;
+    //cout << "Old position " << position << endl;
+    //cout << "Old cell " << gridCoords.at(0) << " " << gridCoords.at(1) << endl;
 
     int columns = _og.getColumns();
     int rows = _og.getRows();
 
     //draw from multinomial distribution to determine which cell in grid person moves to
     //use distances from cell position (one row)
-
-    //discrete_distribution<int> discDist1(_og.getHazards().at(position).begin(), _og.getHazards().at(position).end());
-    //int newCellNumber = discDist1(_generator);
+    vector<double> cellHazards = _og.getHazards().at(position);
+    //cout << "hazard at position: " << hazards.at(position) << endl;
+    //cout << _og.getNodesByCells().at(position/columns).at(position%columns).size() << endl;
+    cellHazards.at(position) = cellHazards.at(position) / _og.getNodesByCells().at(position/columns).at(position%columns).size() * (_og.getNodesByCells().at(position/columns).at(position%columns).size() - 1);
+    //cout << "hazard at position: " << hazards.at(position) << endl;
+    discrete_distribution<int> discDist1(cellHazards.begin(), cellHazards.end());
+    int newCellNumber = discDist1(_generator);
     //cout << newCellNumber << endl;
 
-    MultinomialDistribution mn1(_og.getHazards().at(position));
-    uniform_real_distribution<double> unifDist1(0.0, *max_element(mn1.getProbabilities().begin(), mn1.getProbabilities().end()));
-    double u = unifDist1(_generator);
+    //MultinomialDistribution mn1(_og.getHazards().at(position));
+    //uniform_real_distribution<double> unifDist1(0.0, *max_element(mn1.getProbabilities().begin(), mn1.getProbabilities().end()));
+    //double u = unifDist1(_generator);
     //cout << "u " << u << endl;
-    int newCellNumber = mn1.bisection(0, _og.getHazards().at(position).size()-1, u);
-    double totalCellHazard = _og.getHazards().at(position).at(newCellNumber);
-    //for(double x:_og.getHazards().at(position)) cout << x << " ";
+    //int newCellNumber = mn1.bisection(0, _og.getHazards().at(position).size()-1, u);
+    double totalCellHazard = cellHazards.at(newCellNumber);
+    //for(double x:hazards) cout << x << " ";
     //cout << endl;
-    int newCellY = newCellNumber % columns;
-    int newCellX = newCellNumber / columns;
-    cout << newCellNumber << endl;
-    cout << "target cell: " << newCellX << " " << newCellY << endl;
+    int newColumn = newCellNumber % columns;
+    int newRow = newCellNumber / columns;
+    //cout << newCellNumber << endl;
+    //cout << "target cell: " << newRow << " " << newColumn << endl << endl;
 
     //relocate to one of the nodes in the chosen cell
-    vector<shared_ptr<Node> > targetNodes = _og.getNodesByCells().at(newCellX).at(newCellY);
+    vector<shared_ptr<Node> > targetNodes = _og.getNodesByCells().at(newRow).at(newColumn);
 
     if(targetNodes.size() > 0)
     {
-        vector<double> probabilities;
-        probabilities.reserve(targetNodes.size() - 1);
+        vector<double> nodeHazards;
+        nodeHazards.reserve(targetNodes.size() - 1);
 
-        double sumProbs = 0;
+        double sumNodeHazards = 0;
         for(unsigned i=0; i<targetNodes.size(); ++i)
         {
             if(targetNodes.at(i)->getNodeNumber() != nodeNumber)
@@ -199,30 +203,30 @@ void Person::relocate(mt19937_64 &_generator, Graph &_g, OverlayGrid &_og, doubl
                 double temp = (targetNodes.at(i)->getCoordinates().at(0) - _g.getNodeVector().at(nodeNumber)->getCoordinates().at(0)) * (targetNodes.at(i)->getCoordinates().at(0) - _g.getNodeVector().at(nodeNumber)->getCoordinates().at(0))
                             + (targetNodes.at(i)->getCoordinates().at(1) - _g.getNodeVector().at(nodeNumber)->getCoordinates().at(1)) * (targetNodes.at(i)->getCoordinates().at(1) - _g.getNodeVector().at(nodeNumber)->getCoordinates().at(1));
 
-                cout << targetNodes.at(i)->getCoordinates().at(0) << " " << targetNodes.at(i)->getCoordinates().at(1) <<endl;
-                cout << _g.getNodeVector().at(nodeNumber)->getCoordinates().at(0) << " " << _g.getNodeVector().at(nodeNumber)->getCoordinates().at(1) << endl;
-                cout << coordinates.at(0) << " " << coordinates.at(1) << endl << endl;
+                //cout << targetNodes.at(i)->getCoordinates().at(0) << " " << targetNodes.at(i)->getCoordinates().at(1) <<endl;
+                //cout << _g.getNodeVector().at(nodeNumber)->getCoordinates().at(0) << " " << _g.getNodeVector().at(nodeNumber)->getCoordinates().at(1) << endl;
+                //cout << coordinates.at(0) << " " << coordinates.at(1) << endl << endl;
 
                 double distance = sqrt(temp);
-                double probability = 1 + distance / _alpha;
-                probability = pow(probability, -_gamma);
-                probabilities.push_back(probability);
+                double nodeHazard = 1 + distance / _alpha;
+                nodeHazard = pow(nodeHazard, -_gamma);
+                nodeHazards.push_back(nodeHazard);
 
-                cout << distance << " " << probability << " " << sumProbs;
+                //cout << distance << " " << nodeHazard << " " << sumNodeHazards;
 
-                sumProbs = sumProbs + probability;
+                sumNodeHazards = sumNodeHazards + nodeHazard;
 
-                cout << " " << sumProbs << endl << endl;
+                //cout << " " << sumNodeHazards << endl << endl;
             }
             else
-                probabilities.push_back(0);
+                nodeHazards.push_back(0);
         }
-        probabilities.push_back(totalCellHazard - sumProbs);
-        //cout << totalCellHazard << " " << sumProbs << endl << endl;
-        //for(double x:probabilities) cout << x << " ";
+        nodeHazards.push_back(totalCellHazard - sumNodeHazards);
+        //cout << totalCellHazard << " " << sumNodeHazards << " " << totalCellHazard - sumNodeHazards << endl << endl;
+        //for(double x:nodeHazards) cout << x << " ";
         //cout << endl;
 
-        discrete_distribution<int> discDist2(probabilities.begin(), probabilities.end());
+        discrete_distribution<int> discDist2(nodeHazards.begin(), nodeHazards.end());
         int n = discDist2(_generator);
         //MultinomialDistribution mn2(probabilities);
         //uniform_real_distribution<double> unifDist2(0.0, *max_element(mn2.getProbabilities().begin(), mn2.getProbabilities().end()));

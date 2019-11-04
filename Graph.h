@@ -32,6 +32,8 @@ public:
     //from centre node
     void setNodeCoordinatesPoisson(double _mean, double _maxRadius, double _n, mt19937_64 &_generator);
 
+    void setNodeCoordinatesPoissonDensity(double _mean, double _maxRadius, double _n, mt19937_64 &_generator);
+
     void setNodeNumbers();
 
     void setNodeFitness(vector<double> _fitnesses);
