@@ -23,12 +23,15 @@ private:
     vector<vector<double> > hazards;
     vector<vector<vector<shared_ptr<Node> > > > nodesByCells;
 
+    double K;
+    vector<double> W;
+
 public:
-    OverlayGrid();
+    OverlayGrid(Graph &_g);
     ~OverlayGrid();
 
     void calculateSideLength(Graph &_g, int _numberOfCells);    //needs to be run before makeGrid() and calculateDistances()
-    void makeGrid(Graph &_g, double _alpha, double _gamma);   //determines which nodes are in which cell
+    void makeGrid(Graph &_g, double _Q, double _alpha, double _gamma);   //determines which nodes are in which cell
                                 //needs to be run before distances between cells can be calculated
 
     double getSideLength();
@@ -39,8 +42,11 @@ public:
     double getMinY();
     double getMaxY();
 
-    const vector<vector<double> > &getHazards();
+    vector<vector<double> > getHazards();
     vector<vector<vector<shared_ptr<Node> > > > getNodesByCells();
+
+    double getK();
+    vector<double> getW();
 };
 
 #endif // OVERLAYGRID_H_INCLUDED

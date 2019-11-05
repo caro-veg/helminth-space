@@ -34,14 +34,9 @@ int main(int arc, char *argv[])
     Output out;
 
     Graph g;
-    g.createNodes(3);
-    //g.setNodeCoordinatesPoisson(4, 100, 100, generator);
-    vector<vector<double> > coordinates{{0,0}, {-4, -4}, {-4, 4}/*, {4, 4}, {4, -4}*/};
-    /*vector<vector<double> > coordinates;
-    for(int i=0; i<100; ++i)
-    {
-        coordinates.push_back({i, i});
-    }*/
+    g.createNodes(5);
+    //g.setNodeCoordinatesPoisson(10, 100, 100, generator);
+    vector<vector<double> > coordinates{{0,0}, {-4, -4}, {-4, 4}, {4, 4}, {4, -4}};
     g.setNodeCoordinates(coordinates);
     g.setNodeNumbers();
     cout << "Number of nodes: " << g.getNodeVector().size() << endl << endl;
@@ -52,9 +47,9 @@ int main(int arc, char *argv[])
     //g.setNodeNumbers();
     //cout << g.getNodeVector().size() << endl;
 
-    OverlayGrid og;
-    og.calculateSideLength(g, 2);
-    og.makeGrid(g, 3, 1.6);
+    OverlayGrid og(g);
+    og.calculateSideLength(g, 4);
+    og.makeGrid(g, 1, 3, 3);
 
     cout << og.getSideLength() << endl;
     cout << og.getRows() << " " << og.getColumns() << endl;
@@ -95,7 +90,7 @@ int main(int arc, char *argv[])
     uniform_int_distribution<int> unifDist(0, g.getNodeVector().size()-1);
 
 
-   for(int i=0; i<1000; ++i)
+   for(int i=0; i<10; ++i)
     {
         //cout << "######## " << i << " ############" << endl;
         vector<double> coordinates1;
@@ -107,7 +102,7 @@ int main(int arc, char *argv[])
         //cout << "prior " << p.getCoordinates().at(0) << " " << p.getCoordinates().at(1) << endl;
         //p.relocate(generator, g, kd, 3000);
         //p.relocate(generator);
-        p.relocate(generator, g, og, 3, 1.6);
+        p.relocate(generator, g, og, 3, 3);
         coordinates2.push_back(static_cast<double>(i));
         //cout << "post " << p.getCoordinates().at(0) << " " << p.getCoordinates().at(1) << endl;
         coordinates2.push_back(p.getCoordinates().at(0));

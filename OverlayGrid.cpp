@@ -4,9 +4,10 @@
 
 using namespace std;
 
-OverlayGrid::OverlayGrid() : minX(0), maxX(0), minY(0), maxY(0), rows(0), columns(0)
+OverlayGrid::OverlayGrid(Graph &_g) : sideLength(0), minX(0), maxX(0), minY(0), maxY(0), rows(0), columns(0), K(0)
 {
-
+    for(unsigned i=0; i<_g.getNodeVector().size(); ++i)
+        W.push_back(0);
 }
 
 OverlayGrid::~OverlayGrid() {}
@@ -48,11 +49,10 @@ void OverlayGrid::calculateSideLength(Graph &_g, int _numberOfCells)
 }
 
 
-void OverlayGrid::makeGrid(Graph &_g, double _alpha, double _gamma) // for hazard calculation pass different functions: could be power law or exponential
+void OverlayGrid::makeGrid(Graph &_g, double _Q, double _alpha, double _gamma) // for hazard calculation pass different functions: could be power law or exponential
 {
-    //count villages in each grid cell
+    //count nodes in each grid cell
     int position = -1;
-    vector<vector<shared_ptr<Node> > > nodesByCellsLong;
     for(int i=0; i<rows; ++i)
     {
         vector<vector<shared_ptr<Node> > > temp1;
@@ -76,13 +76,40 @@ void OverlayGrid::makeGrid(Graph &_g, double _alpha, double _gamma) // for hazar
                 }
             }
             temp1.push_back(temp2);
-            nodesByCellsLong.push_back(temp2);
         }
         nodesByCells.push_back(temp1);
     }
 
 
-    //initialise distance matrix
+    /********************************************************************************************************
+    /* calculate node weights
+    ********************************************************************************************************/
+    double N = static_cast<double>(_g.getNodeVector().size());
+    for(int i=0; i<_g.getNodeVector().size(); ++i)
+    {
+        for(int j=0; j<_g.getNodeVector().size(); ++j)
+        {
+            double distance = (_g.getNodeVector().at(i)->getCoordinates().at(0) - _g.getNodeVector().at(j)->getCoordinates().at(0)) * (_g.getNodeVector().at(i)->getCoordinates().at(0) - _g.getNodeVector().at(j)->getCoordinates().at(0))
+                            + (_g.getNodeVector().at(i)->getCoordinates().at(1) - _g.getNodeVector().at(j)->getCoordinates().at(1)) * (_g.getNodeVector().at(i)->getCoordinates().at(1) - _g.getNodeVector().at(j)->getCoordinates().at(1));
+            distance = sqrt(distance);
+            double weight = 1 + distance / _alpha;
+            weight = pow(weight, -_gamma);
+
+            if(i > j)
+                K = K + weight;
+
+            if(i != j)
+                W.at(i) = W.at(i) + weight;
+        }
+        _g.getNodeVector().at(i)->setWeight(W.at(i));
+    }
+
+    K = 2 * _Q / N * K;
+
+
+    /********************************************************************************************************
+    /* calculate hazard matrix
+    ********************************************************************************************************/
     double totalCells = columns * rows;
     vector<double> help(totalCells, 0);
     for(int i=0; i<totalCells; ++i)
@@ -115,8 +142,20 @@ void OverlayGrid::makeGrid(Graph &_g, double _alpha, double _gamma) // for hazar
             double distance = xDistance * xDistance + yDistance * yDistance;
             distance = sqrt(distance);
             double hazard = 1 + distance / _alpha;  //make function that can be passed into this function
-            hazard = pow(hazard, -_gamma);
-            hazards.at(i).at(j) = hazard * nodesByCellsLong.at(j).size();
+            hazard = pow(hazard, -_gamma) * nodesByCells.at(j / columns).at(j % columns).size();
+            //multiply by sum of node weightings in each cell
+            hazards.at(i).at(j) = hazard * _Q * nodesByCells.at(j / columns).at(j % columns).size();
+
+            double sumWeights = 0;
+            for(unsigned k=0; k<nodesByCells.at(j / columns).at(j % columns).size(); ++k)
+            {
+                //cout << nodesByCells.at(i).at(j).size() << " " << k << endl;
+                if(nodesByCells.at(j / columns).at(j % columns).size() > 0)
+                {
+                    sumWeights = sumWeights + nodesByCells.at(j / columns).at(j % columns).at(k)->getWeight();
+                }
+            }
+            hazards.at(i).at(j) = hazard * sumWeights;
         }
     }
 
@@ -185,3 +224,15 @@ vector<vector<vector<shared_ptr<Node> > > > OverlayGrid::getNodesByCells()
 {
     return nodesByCells;
 }
+
+
+double OverlayGrid::getK()
+{
+    return K;
+}
+
+vector<double> OverlayGrid::getW()
+{
+    return W;
+}
+
