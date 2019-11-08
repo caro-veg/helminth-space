@@ -85,6 +85,7 @@ void OverlayGrid::makeGrid(Graph &_g, double _Q, double _alpha, double _gamma) /
     /* calculate node weights
     ********************************************************************************************************/
     double N = static_cast<double>(_g.getNodeVector().size());
+    double H = 0;   //total hazard
     for(int i=0; i<_g.getNodeVector().size(); ++i)
     {
         for(int j=0; j<_g.getNodeVector().size(); ++j)
@@ -95,8 +96,7 @@ void OverlayGrid::makeGrid(Graph &_g, double _Q, double _alpha, double _gamma) /
             double weight = 1 + distance / _alpha;
             weight = pow(weight, -_gamma);
 
-            if(i > j)
-                K = K + weight;
+            H = H + weight;
 
             if(i != j)
                 W.at(i) = W.at(i) + weight;
@@ -104,7 +104,7 @@ void OverlayGrid::makeGrid(Graph &_g, double _Q, double _alpha, double _gamma) /
         _g.getNodeVector().at(i)->setWeight(W.at(i));
     }
 
-    K = 2 * _Q / N * K;
+    K = _Q / N * H;
 
 
     /********************************************************************************************************
@@ -117,7 +117,7 @@ void OverlayGrid::makeGrid(Graph &_g, double _Q, double _alpha, double _gamma) /
         hazards.push_back(help);
     }
 
-    vector<vector<double> > coordinates;
+   vector<vector<double> > coordinates;
     for(int i=0; i<rows; ++i)
     {
         for(int j=0; j<columns; ++j)
@@ -142,22 +142,22 @@ void OverlayGrid::makeGrid(Graph &_g, double _Q, double _alpha, double _gamma) /
             double distance = xDistance * xDistance + yDistance * yDistance;
             distance = sqrt(distance);
             double hazard = 1 + distance / _alpha;  //make function that can be passed into this function
-            hazard = pow(hazard, -_gamma) * nodesByCells.at(j / columns).at(j % columns).size();
-            //multiply by sum of node weightings in each cell
-            hazards.at(i).at(j) = hazard * _Q * nodesByCells.at(j / columns).at(j % columns).size();
+            hazard = pow(hazard, -_gamma) * _Q * nodesByCells.at(j / columns).at(j % columns).size();
 
-            double sumWeights = 0;
-            for(unsigned k=0; k<nodesByCells.at(j / columns).at(j % columns).size(); ++k)
+            if(i==j)
             {
-                //cout << nodesByCells.at(i).at(j).size() << " " << k << endl;
-                if(nodesByCells.at(j / columns).at(j % columns).size() > 0)
-                {
-                    sumWeights = sumWeights + nodesByCells.at(j / columns).at(j % columns).at(k)->getWeight();
-                }
+                hazards.at(i).at(j) = 0;
             }
-            hazards.at(i).at(j) = hazard * sumWeights;
+
+            else
+            {
+                hazards.at(i).at(j) = hazard;
+            }
+
         }
     }
+
+
 
     //for testing: Manhattan distance for recognisable matrix values in printout
     /*for(unsigned i=0; i<coordinates.size(); ++i)

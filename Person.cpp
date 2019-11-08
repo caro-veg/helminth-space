@@ -166,8 +166,12 @@ void Person::relocate(mt19937_64 &_generator, Graph &_g, OverlayGrid &_og, doubl
     //draw from multinomial distribution to determine which cell in grid person moves to
     //use distances from cell position (one row)
     vector<double> cellHazards = _og.getHazards().at(position);
+    for(unsigned i=0; i<cellHazards.size(); ++i)
+    {
+        cellHazards.at(i) = cellHazards.at(i) * _og.getK() / _og.getW().at(nodeNumber);
+    }
     //set hazard of moving to current cell to 0 --> accounted for by the non-event happens
-    cellHazards.at(position) = cellHazards.at(position) / _og.getNodesByCells().at(position/columns).at(position%columns).size() * (_og.getNodesByCells().at(position/columns).at(position%columns).size() - 1);
+    //cellHazards.at(position) = cellHazards.at(position) / _og.getNodesByCells().at(position/columns).at(position%columns).size() * (_og.getNodesByCells().at(position/columns).at(position%columns).size() - 1);
     discrete_distribution<int> discDist1(cellHazards.begin(), cellHazards.end());
     int newCellNumber = discDist1(_generator);
 
@@ -201,12 +205,13 @@ void Person::relocate(mt19937_64 &_generator, Graph &_g, OverlayGrid &_og, doubl
                 double distance = sqrt(temp);
                 double nodeHazard = 1 + distance / _alpha;
                 nodeHazard = pow(nodeHazard, -_gamma);
+                //cout << "node hazard: " << nodeHazard << endl;
                 nodeHazard = nodeHazard * _og.getK() / _og.getW().at(nodeNumber);
                 //cout << "K " << _og.getK() << " W " << _og.getW().at(nodeNumber) << endl;
                 //cout << "node hazard: " << nodeHazard << endl;
                 nodeHazards.push_back(nodeHazard);
 
-                //cout << distance << " " << nodeHazard << " " << sumNodeHazards;
+                //cout << distance << " " << nodeHazard << " " << sumNodeHazards << endl;
 
                 sumNodeHazards = sumNodeHazards + nodeHazard;
             }
@@ -214,7 +219,7 @@ void Person::relocate(mt19937_64 &_generator, Graph &_g, OverlayGrid &_og, doubl
                 nodeHazards.push_back(0);
         }
         nodeHazards.push_back(totalCellHazard - sumNodeHazards);
-        cout << totalCellHazard << " " << sumNodeHazards << " " << totalCellHazard - sumNodeHazards << endl << endl;
+        //cout << totalCellHazard << " " << sumNodeHazards << " " << totalCellHazard - sumNodeHazards << endl << endl;
 
         discrete_distribution<int> discDist2(nodeHazards.begin(), nodeHazards.end());
         int n = discDist2(_generator);

@@ -28,7 +28,8 @@ int main(int arc, char *argv[])
     unsigned seed = 1234;
     mt19937_64 generator(seed);
 
-    int timeSteps=10;
+    double tMax = 0.01;
+    int numberOfRepeats = 1;
 
     Recorder rec;
     Output out;
@@ -90,7 +91,7 @@ int main(int arc, char *argv[])
     uniform_int_distribution<int> unifDist(0, g.getNodeVector().size()-1);
 
 
-   for(int i=0; i<10; ++i)
+   for(int i=0; i<numberOfRepeats; ++i)
     {
         //cout << "######## " << i << " ############" << endl;
         vector<double> coordinates1;
@@ -102,7 +103,7 @@ int main(int arc, char *argv[])
         //cout << "prior " << p.getCoordinates().at(0) << " " << p.getCoordinates().at(1) << endl;
         //p.relocate(generator, g, kd, 3000);
         //p.relocate(generator);
-        p.relocate(generator, g, og, 3, 3);
+        p.relocate(generator, g, og, 3, 3, tMax);
         coordinates2.push_back(static_cast<double>(i));
         //cout << "post " << p.getCoordinates().at(0) << " " << p.getCoordinates().at(1) << endl;
         coordinates2.push_back(p.getCoordinates().at(0));
@@ -114,6 +115,8 @@ int main(int arc, char *argv[])
         distance = sqrt(distance);
         distances.push_back(distance);
         //cout << endl << endl;
+
+        }
     }
 
     /*for(int i=0; i<og.getNodesByCells().size(); ++i)
